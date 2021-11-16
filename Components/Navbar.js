@@ -28,8 +28,8 @@ const Navbar = () => {
               <Link href="/wallet">
                 <a
                   className="nav-link fs-5"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  // target="_blank"
+                  // rel="noopener noreferrer"
                 >
                   Wallet
                 </a>

@@ -1,8 +1,6 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/BlockExplorer.module.css";
 import axios from "axios";
-import { constSelector } from "recoil";
 
 export default function Home() {
   const handleBlockchain = async () => {
@@ -15,6 +13,9 @@ export default function Home() {
   };
   return (
     <>
+      <Head>
+        <title>NOOB | Block Explorer</title>
+      </Head>
       <div className={styles.background}></div>
       <div
         className="container position-relative "
