@@ -1,26 +1,19 @@
-.container {
-  padding: 0 2rem;
-}
-.landingImage {
-  z-index: 0;
-  position: relative;
-  padding: 50px;
-}
-
 .landingText {
-  position: relative;
-  z-index: 1;
-  max-width: 700px;
-  left: 4.5rem;
+  max-width: 800px;
 }
 
 .github {
   text-decoration: none;
   cursor: pointer;
+  color: aliceblue;
 }
 
-.landingForm {
-  z-index: 1;
+.github:after {
+  content: "Jason Schwarz";
+}
+.github:hover:after {
+  content: "Check me out on Github";
+  color: aliceblue;
 }
 
 .background {
@@ -33,7 +26,6 @@
   );
   width: 100%;
   height: 15rem;
-  z-index: 0;
   position: relative;
   padding: 50px;
 }
@@ -58,4 +50,5 @@
   color: white;
   text-align: center;
   padding: 1rem;
+  z-index: 3;
 }

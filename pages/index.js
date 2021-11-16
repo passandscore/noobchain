@@ -15,7 +15,14 @@ export default function Home() {
   };
   return (
     <>
-      <div className={styles.background}>
+      <div className={styles.background}></div>
+      <div
+        className="container position-relative "
+        style={{
+          bottom: "11rem",
+          zIndex: "2",
+        }}
+      >
         <div className={styles.landingText}>
           <label htmlFor="basic-url" className="text-white py-2 fs-5">
             Noobchain PoW Testnet Explorer
@@ -38,6 +45,7 @@ export default function Home() {
               style={{
                 borderTopRightRadius: "10px",
                 borderBottomRightRadius: "10px",
+                cursor: "pointer",
               }}
             >
               <svg
@@ -48,27 +56,33 @@ export default function Home() {
                 fill="currentColor"
                 className="bi bi-search"
                 viewBox="0 0 16 16"
+                cursor="pointer"
               >
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
               </svg>
             </span>
           </div>
         </div>
-      </div>
-
-      <div className="container">
         <div className="row">
           <div className="col-lg-6">
             <div
-              className="card shadow-lg"
-              style={{ borderRadius: "10px", bottom: "3rem", height: "30rem" }}
+              className="card shadow-lg mb-5"
+              style={{ borderRadius: "10px", top: "3rem", height: "30rem" }}
             >
               {/* BLOCKS */}
-              <h5 className="card-header bg-light">Latest Blocks</h5>
+              <h5
+                className="card-header bg-light"
+                style={{
+                  borderTopLeftRadius: "10px",
+                  borderTopRightRadius: "10px",
+                }}
+              >
+                Latest Blocks
+              </h5>
               <div className="card-body">
                 <div className="row">
                   {/* col 1 */}
-                  <div className="col-sm-3">
+                  <div className="col-md-3">
                     <div>
                       <div className=" d-flex align-items-center">
                         <div className="">
@@ -101,8 +115,8 @@ export default function Home() {
                     </div>
                   </div>
                   {/* col 2 */}
-                  <div className="col-sm-6">
-                    <div className="">
+                  <div className="col-md-6">
+                    <div className="px-2">
                       <div className="text-secondary">
                         Mined By{" "}
                         <a href="#" className={styles.noDecor}>
@@ -117,7 +131,7 @@ export default function Home() {
                     </div>
                   </div>
                   {/* col 3 */}
-                  <div className="col-sm-3">
+                  <div className="col-md-3">
                     <div className=" ">
                       <div className="  d-flex justify-content-end ">
                         0.00128 NOOB
@@ -141,22 +155,29 @@ export default function Home() {
               </div>
             </div>
           </div>
-
           <div className="col-lg-6">
             <div
-              className="card shadow-lg"
+              className="card shadow-lg mb-5"
               style={{
                 borderRadius: "10px",
-                bottom: "3rem",
+                top: "3rem",
                 height: "30rem",
               }}
             >
               {/* TRANSACTIONS */}
-              <h5 className="card-header">Latest Transactions</h5>
+              <h5
+                className="card-header"
+                style={{
+                  borderTopLeftRadius: "10px",
+                  borderTopRightRadius: "10px",
+                }}
+              >
+                Latest Transactions
+              </h5>
               <div className="card-body">
                 <div className="row">
                   {/* col 1 */}
-                  <div className="col-sm-3">
+                  <div className="col-md-3">
                     <div>
                       <div className=" d-flex align-items-center">
                         <div className="">
@@ -189,8 +210,8 @@ export default function Home() {
                     </div>
                   </div>
                   {/* col 2 */}
-                  <div className="col-sm-6">
-                    <div className="">
+                  <div className="col-md-6">
+                    <div className="px-4">
                       <div className="text-secondary">
                         From:{" "}
                         <a href="#" className={styles.noDecor}>
@@ -206,7 +227,7 @@ export default function Home() {
                     </div>
                   </div>
                   {/* col 3 */}
-                  <div className="col-sm-3">
+                  <div className="col-md-3">
                     <div className=" ">
                       <div className="  d-flex justify-content-end ">
                         0.00128 NOOB

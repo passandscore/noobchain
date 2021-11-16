@@ -34,9 +34,7 @@ const Footer = () => {
           target="_blank"
           rel="noreferrer"
           className={styles.github}
-        >
-          Jason Schwarz
-        </a>
+        ></a>
       </p>
     </div>
   );
