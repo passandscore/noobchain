@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "../styles/Wallet.module.css";
+import MenuBar from "../../Components/Wallet/MenuBar";
 
 export default function Wallet() {
   return (
@@ -10,42 +10,34 @@ export default function Wallet() {
         <title>NOOB | Wallet</title>
       </Head>
 
-      <div
-        className={styles.background}
-        style={{ display: "flex", justifyContent: "center" }}
-      ></div>
+      <MenuBar />
       <div className="container" style={{ marginTop: "10rem" }}>
         <div className="jumbotron">
           <div className="container text-center text-lg-left">
             <div className="row">
               <div className="col-lg-8">
-                <h1 className="display-4">
-                  A simple yet complete blockchain solution for everyone.
-                </h1>
+                <h1 className="display-4">Every noob needs a wallet!</h1>
                 <p className="lead">
-                  Noobchain is a peer-to-peer Internet currency that enables
-                  payments to anyone in my localhost world. Noobchain is an open
-                  source, potential global payment network that is fully
-                  decentralized without any central authorities....I think.
+                  Noobwallet is a simple, easy to use, and secure wallet for
+                  all. It generates a new random address for you to use. You can
+                  access your wallet at anything with your private key. It can
+                  be used to send and receive NOOBs.
                 </p>
                 <span className="text-center d-inline-block">
-                  <Link href="/wallet">
+                  <Link href="/wallet/create-new-wallet">
                     <a
                       className="btn btn-primary btn-lg w-100"
                       href="#"
                       role="button"
                     >
-                      Try it free
+                      Create a wallet
                     </a>
                   </Link>
-                  <p className="text-muted" style={{ fontSize: "14px" }}>
-                    No credit card required
-                  </p>
                 </span>
               </div>
               <div className="col-lg-4 align-items-center d-flex">
                 <Image
-                  src="/images/blocks-in-hand.jpg"
+                  src="/images/noob-token-1.png"
                   alt="blocks-in-hand"
                   class="img-fluid"
                   width="1200px"

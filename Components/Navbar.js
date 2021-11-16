@@ -15,15 +15,18 @@ const Navbar = () => {
                 class="d-inline-block align-center"
                 alt=""
               ></Image>
-              <a className="navbar-brand px-2" href="#">
-                Noobchain
-              </a>
+              <Link href="/">
+                <a className="nav-link fs-5">Noobchain</a>
+              </Link>
             </div>
           </div>
           <div className="col-sm-9 d-flex flex-row-reverse">
             <div className=" d-inline-flex  ">
-              <Link href="/">
-                <a className="nav-link fs-5">Block Explorer</a>
+              <Link href="/explorer">
+                <a className="nav-link fs-5">Explorer</a>
+              </Link>
+              <Link href="/faucet">
+                <a className="nav-link fs-5">Faucet</a>
               </Link>
               <Link href="/wallet">
                 <a
