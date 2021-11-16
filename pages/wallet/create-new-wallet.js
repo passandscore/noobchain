@@ -10,9 +10,24 @@ export default function CreateNewWallet() {
       </Head>
 
       <MenuBar />
-      <section id="viewHome">
-        <h1>Create New Wallet</h1>
-      </section>
+
+      <div className="container">
+        <h1 className="display-5 my-5">Create a New Wallet</h1>
+
+        <form>
+          <div className="form-group">
+            <textarea className="form-control" rows="6"></textarea>
+          </div>
+          <button
+            type="button"
+            id="buttonGenerateNewWallet"
+            value="Generate Now"
+            className="btn btn-primary btn mt-3 w-100"
+          >
+            Generate Now
+          </button>
+        </form>
+      </div>
     </>
   );
 }

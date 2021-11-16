@@ -16,22 +16,22 @@ const Navbar = () => {
         </p>
         <p className="btn fs-5">
           <Link href="/wallet/create-new-wallet">
-            <a className="nav-link text-info fs-5">Create New Wallet</a>
+            <a className="nav-link text-info fs-5">Create</a>
           </Link>
         </p>
         <p className="btn fs-5">
           <Link href="/wallet/open-existing-wallet">
-            <a className="nav-link text-info fs-5"> Open Existing Wallet</a>
+            <a className="nav-link text-info fs-5"> Open</a>
           </Link>
         </p>
         <p className="btn fs-5">
           <Link href="/wallet/account-balance">
-            <a className="nav-link text-info fs-5"> Account Balance</a>
+            <a className="nav-link text-info fs-5">Balance</a>
           </Link>
         </p>
         <p className="btn fs-5">
           <Link href="/wallet/send-transaction">
-            <a className="nav-link text-info fs-5"> Send Transaction</a>
+            <a className="nav-link text-info fs-5"> Send</a>
           </Link>
         </p>
         <p className="btn fs-5">
