@@ -25,10 +25,21 @@ export default function Home() {
             <input
               type="text"
               className="form-control form-control-lg"
+              style={{
+                borderTopLeftRadius: "10px",
+                borderBottomLeftRadius: "10px",
+              }}
               id="basic-url"
               placeholder="Search by Address / Txn Hash / Block Hash"
             />
-            <span className="input-group-text bg-info" id="basic-addon3">
+            <span
+              className="input-group-text bg-info px-4"
+              id="basic-addon3"
+              style={{
+                borderTopRightRadius: "10px",
+                borderBottomRightRadius: "10px",
+              }}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -47,7 +58,7 @@ export default function Home() {
 
       <div className="container">
         <div className="row">
-          <div className="col">
+          <div className="col-lg-6">
             <div
               className="card shadow-lg"
               style={{ borderRadius: "10px", bottom: "3rem", height: "30rem" }}
@@ -117,23 +128,28 @@ export default function Home() {
                 </div>
 
                 <hr />
-                <div
-                  className="card-footer  bg-primary  text-light  font-weight-bold text-center"
-                  style={{
-                    position: "relative",
-                    borderRadius: "10px",
-                    top: "18rem",
-                  }}
-                >
-                  View all blocks
-                </div>
+              </div>
+              <div
+                className="card-footer  bg-primary  text-light  font-weight-bold text-center"
+                style={{
+                  borderBottomLeftRadius: "10px",
+                  borderBottomRightRadius: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                View all Blocks
               </div>
             </div>
           </div>
-          <div className="col">
+
+          <div className="col-lg-6">
             <div
               className="card shadow-lg"
-              style={{ borderRadius: "10px", bottom: "3rem", height: "30rem" }}
+              style={{
+                borderRadius: "10px",
+                bottom: "3rem",
+                height: "30rem",
+              }}
             >
               {/* TRANSACTIONS */}
               <h5 className="card-header">Latest Transactions</h5>
@@ -201,16 +217,16 @@ export default function Home() {
                 </div>
 
                 <hr />
-                <div
-                  className="card-footer  bg-primary  text-light  font-weight-bold text-center"
-                  style={{
-                    position: "relative",
-                    borderRadius: "10px",
-                    top: "18rem",
-                  }}
-                >
-                  View all Transactions
-                </div>
+              </div>
+              <div
+                className="card-footer  bg-primary  text-light  font-weight-bold text-center"
+                style={{
+                  borderBottomLeftRadius: "10px",
+                  borderBottomRightRadius: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                View all Transactions
               </div>
             </div>
           </div>
