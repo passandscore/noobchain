@@ -1,11 +1,14 @@
 import Head from "next/head";
 import { useState, useRef } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
-import hashes from "../../lib/hashes";
+// import hashes from "../../lib/hashes";
 import elliptic from "../../lib/elliptic";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
 import { lockState } from "../../recoil/atoms.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+import { saveKeysInSession } from "../../lib/session";
 
 export default function CreateNewWallet() {
   const [walletStatus, setWalletStatus] = useRecoilState(lockState);
@@ -14,21 +17,8 @@ export default function CreateNewWallet() {
   const textAreaRef = useRef(null);
 
   const handleClick = () => {
-    console.log("clicked");
     let keyPair = secp256k1.genKeyPair();
     saveKeysInSession(keyPair);
-  };
-
-  const saveKeysInSession = (keyPair) => {
-    console.log("saving keys in session");
-    sessionStorage["privKey"] = keyPair.getPrivate().toString(16);
-    let pubKey =
-      keyPair.getPublic().getX().toString(16) +
-      (keyPair.getPublic().getY().isOdd() ? "1" : "0");
-    sessionStorage["pubKey"] = pubKey;
-    let ripemd160 = new hashes.RMD160();
-    sessionStorage["address"] = ripemd160.hex(pubKey);
-
     // display result
     textAreaRef.current.value =
       "Generated random private key: " +
@@ -43,6 +33,11 @@ export default function CreateNewWallet() {
       sessionStorage["address"];
 
     setWalletStatus("unlocked");
+
+    toast.success("Wallet created successfully!", {
+      position: "top-right",
+      theme: "colored",
+    });
   };
 
   return (
@@ -51,6 +46,7 @@ export default function CreateNewWallet() {
         <title>NOOB Wallet | New Wallet</title>
       </Head>
 
+      <ToastContainer position="top-center" pauseOnFocusLoss={false} />
       <MenuBar />
 
       <div className="container">
