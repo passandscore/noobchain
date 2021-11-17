@@ -12,7 +12,7 @@ const Navbar = () => {
                 src="/images/block.png"
                 width="30"
                 height="30"
-                class="d-inline-block align-center"
+                className="d-inline-block align-center"
                 alt=""
               ></Image>
               <Link href="/">

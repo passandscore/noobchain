@@ -1,9 +1,12 @@
 import Head from "next/head";
-import Image from "next/image";
 import MenuBar from "../../Components/Wallet/MenuBar";
-import { Toast } from "react-bootstrap";
+import AccountInfo from "../../Components/Wallet/AccountInfo";
+import { useRecoilValue } from "recoil";
+import { lockState } from "../../recoil/atoms";
 
 export default function AccountBalances() {
+  const walletStatus = useRecoilValue(lockState);
+
   return (
     <>
       <Head>
@@ -40,29 +43,8 @@ export default function AccountBalances() {
         </form>
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          bottom: "1rem",
-          left: "1rem",
-          zIndex: "4",
-        }}
-      >
-        <Toast className="ml-10">
-          <Toast.Header>
-            <Image
-              src="/images/block.png"
-              width="16px"
-              height="16px"
-              className="rounded"
-              alt=""
-            />
-            <strong className="me-auto">Address:</strong>
-            0xjoidsfh87sdfod8sfsdufsfdsd
-          </Toast.Header>
-          <Toast.Body>Node URL: http//localhost:3001</Toast.Body>
-        </Toast>
-      </div>
+      {/* Display Account Information */}
+      {walletStatus == "unlocked" && <AccountInfo />}
     </>
   );
 }

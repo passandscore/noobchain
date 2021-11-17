@@ -1,8 +1,19 @@
 import Link from "next/link";
-import Image from "next/image";
 import styles from "../../styles/Wallet.module.css";
+import { useRecoilState } from "recoil";
+import { lockState } from "../../recoil/atoms";
 
 const Navbar = () => {
+  const [walletStatus, setWalletStatus] = useRecoilState(lockState);
+
+  const handleLogout = () => {
+    console.log(walletStatus);
+    sessionStorage.removeItem("privKey");
+    sessionStorage.removeItem("pubKey");
+    sessionStorage.removeItem("address");
+    setWalletStatus("locked");
+  };
+
   return (
     <>
       <div
@@ -14,31 +25,42 @@ const Navbar = () => {
             <a className="nav-link text-info fs-5">Home</a>
           </Link>
         </p>
-        <p className="btn fs-5">
-          <Link href="/wallet/create-new-wallet">
-            <a className="nav-link text-info fs-5">Create</a>
-          </Link>
-        </p>
-        <p className="btn fs-5">
-          <Link href="/wallet/open-existing-wallet">
-            <a className="nav-link text-info fs-5"> Open</a>
-          </Link>
-        </p>
-        <p className="btn fs-5">
-          <Link href="/wallet/account-balance">
-            <a className="nav-link text-info fs-5">Balance</a>
-          </Link>
-        </p>
-        <p className="btn fs-5">
-          <Link href="/wallet/send-transaction">
-            <a className="nav-link text-info fs-5"> Send</a>
-          </Link>
-        </p>
-        <p className="btn fs-5">
-          <Link href="/wallet">
-            <a className="nav-link text-info fs-5"> Logout</a>
-          </Link>
-        </p>
+
+        {walletStatus == "locked" ? (
+          <>
+            <p className="btn fs-5">
+              <Link href="/wallet/create-new-wallet">
+                <a className="nav-link text-info fs-5">Create</a>
+              </Link>
+            </p>
+            <p className="btn fs-5">
+              <Link href="/wallet/open-existing-wallet">
+                <a className="nav-link text-info fs-5"> Open</a>
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="btn fs-5">
+              <Link href="/wallet/account-balance">
+                <a className="nav-link text-info fs-5">Balance</a>
+              </Link>
+            </p>
+            <p className="btn fs-5">
+              <Link href="/wallet/send-transaction">
+                <a className="nav-link text-info fs-5"> Send</a>
+              </Link>
+            </p>
+            <p className="btn fs-5">
+              <Link href="/wallet">
+                <a className="nav-link text-info fs-5" onClick={handleLogout}>
+                  {" "}
+                  Logout
+                </a>
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </>
   );

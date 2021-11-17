@@ -1,12 +1,15 @@
 import "../styles/globals.css";
 import Layout from "../Components/Layout";
+import { RecoilRoot } from "recoil";
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Layout style={{ minWidth: "700px" }}>
-        <Component {...pageProps} />
-      </Layout>
+      <RecoilRoot>
+        <Layout style={{ minWidth: "700px" }}>
+          <Component {...pageProps} />
+        </Layout>
+      </RecoilRoot>
     </>
   );
 }

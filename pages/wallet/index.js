@@ -1,9 +1,15 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
+import AccountInfo from "../../Components/Wallet/AccountInfo";
+import { useRecoilValue } from "recoil";
+import { lockState } from "../../recoil/atoms";
 
 export default function Wallet() {
+  const walletStatus = useRecoilValue(lockState);
+
   return (
     <>
       <Head>
@@ -20,7 +26,7 @@ export default function Wallet() {
                 <p className="lead">
                   Noobwallet is a simple, easy to use, and secure wallet for
                   all. It generates a new random address for you to use. You can
-                  access your wallet at anything with your private key. It can
+                  access your wallet at any time with your private key. It can
                   be used to send and receive NOOBs.
                 </p>
                 <span className="text-center d-inline-block">
@@ -39,7 +45,7 @@ export default function Wallet() {
                 <Image
                   src="/images/noob-token-1.png"
                   alt="blocks-in-hand"
-                  class="img-fluid"
+                  className="img-fluid"
                   width="1200px"
                   height="800px"
                 />
@@ -48,6 +54,9 @@ export default function Wallet() {
           </div>
         </div>
       </div>
+
+      {/* Display Account Information */}
+      {walletStatus == "unlocked" && <AccountInfo />}
     </>
   );
 }

@@ -25,7 +25,7 @@ export default function Wallet() {
                 <p className="lead">
                   Noobchain is a peer-to-peer Internet currency that enables
                   payments to anyone in my localhost world. Noobchain is an open
-                  source, potential global payment network that is fully
+                  source, potentially global payment network that is fully
                   decentralized without any central authorities....I think.
                 </p>
                 <span className="text-center d-inline-block">
@@ -47,7 +47,7 @@ export default function Wallet() {
                 <Image
                   src="/images/blocks-in-hand.jpg"
                   alt="blocks-in-hand"
-                  class="img-fluid"
+                  className="img-fluid"
                   width="1200px"
                   height="800px"
                 />
