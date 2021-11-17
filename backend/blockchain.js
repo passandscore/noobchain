@@ -1,6 +1,9 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
 const uuid = require("uuid/v1");
+const Transaction = require("./transaction");
+const ValidationUtils = require("./utils/ValidationUtils");
+const config = require("./utils/Config");
 
 /**
  * @notice - Creates a new blockchain
@@ -11,15 +14,13 @@ const uuid = require("uuid/v1");
  */
 class Blockchain {
   constructor() {
-    this.chain = [];
+    this.chain = [config.genesisBlock];
     this.pendingTransactions = [];
     this.difficulty = "0000";
     this.minerReward = 12.5;
 
     this.currentNodeUrl = currentNodeUrl;
     this.networkNodes = [];
-
-    this.addBlock(0, "0", "0");
   }
 
   /**
@@ -29,20 +30,38 @@ class Blockchain {
    * @param hash - The hash of the current block
    * @return - The new block
    */
-  addBlock(nonce, previousBlockHash, hash) {
-    const newBlock = {
-      index: this.chain.length + 1,
-      timestamp: Date.now(),
-      transactions: this.pendingTransactions,
-      nonce: nonce,
-      hash: hash,
-      previousBlockHash: previousBlockHash,
-    };
+  addBlock(tranData) {
+    let tran = new Transaction(
+      tranData.from,
+      tranData.to,
+      tranData.value,
+      tranData.fee,
+      tranData.dateCreated,
+      tranData.data,
+      tranData.senderPubKey,
+      undefined, // the transactionDataHash is auto-calculated
+      tranData.senderSignature
+    );
 
-    this.pendingTransactions = [];
-    this.chain.push(newBlock);
+    // Check for duplicated transactions (to avoid "replay attack")
+    // if (this.findTransactionByDataHash(tran.transactionDataHash))
+    //   return {
+    //     errorMsg: "Duplicated transaction: " + tran.transactionDataHash,
+    //   };
 
-    return newBlock;
+    // if (!tran.verifySignature())
+    //   return { errorMsg: "Invalid signature: " + tranData.senderSignature };
+
+    // let balances = this.getAccountBalance(tran.from);
+    // if (balances.confirmedBalance < tran.value + tran.fee)
+    //   return {
+    //     errorMsg: "Unsufficient sender balance at address: " + tran.from,
+    //   };
+
+    this.pendingTransactions.push(tran);
+    // logger.debug("Added pending transaction: " + JSON.stringify(tran));
+
+    return tran;
   }
 
   getLastBlock() {
@@ -194,6 +213,105 @@ class Blockchain {
     } else {
       return { transaction: correctTransaction, block: correctBlock };
     }
+  }
+
+  /**
+   * @notice - Collects all transactions from the network
+   * @return - All transactions
+   */
+  getAllTransactions() {
+    let transactions = this.getConfirmedTransactions();
+    transactions.push.apply(transactions, this.pendingTransactions);
+    return transactions;
+  }
+
+  /**
+   * @notice - Finds all confirmed transactions within the blockchain
+   * @return - An array of confirmed transactions
+   */
+  getConfirmedTransactions() {
+    let transactions = [];
+    for (let block of this.chain) {
+      transactions.push.apply(transactions, block.transactions);
+      transactions.push(...block.transactions);
+    }
+    return transactions;
+  }
+
+  /**
+   * @notice - Collects all transactions from a specific address
+   * @param address - The address to find the transactions for
+   * @return - All transactions from the address
+   */
+  getTransactionHistory(address) {
+    if (!ValidationUtils.isValidAddress(address)) {
+      return { errorMsg: "Invalid address" };
+    }
+
+    let transactions = this.getAllTransactions();
+    let transactionsByAddress = transactions.filter(
+      (t) => t.from === address || t.to === address
+    );
+    return transactionsByAddress;
+  }
+
+  /**
+   * @notice - Finds the balance of an address
+   * @param address - The address to find the balance for
+   * @return - The balance of the address
+   */
+  getAccountBalance(address) {
+    if (!ValidationUtils.isValidAddress(address)) {
+      return { errorMsg: "Invalid address" };
+    }
+
+    let transactions = this.getTransactionHistory(address);
+    // return transactions;
+    let balance = {
+      safeBalance: 0,
+      confirmedBalance: 0,
+      pendingBalance: 0,
+      safeCount: config.safeConfirmCount,
+    };
+    for (let tran of transactions) {
+      // Determine the number of blocks mined since the transaction was created
+
+      let confimationCount = 0;
+      if (typeof tran.minedInBlockIndex === "number") {
+        confimationCount = this.chain.length - tran.minedInBlockIndex + 1;
+      }
+
+      // Calculate the address balance
+      if (tran.from === address) {
+        // Funds spent -> subtract value and fee
+        balance.pendingBalance -= tran.fee;
+        if (confimationCount === 0 || tran.transferSuccessful)
+          balance.pendingBalance -= tran.value;
+        if (confimationCount >= 1) {
+          balance.confirmedBalance -= tran.fee;
+          if (tran.transferSuccessful) balance.confirmedBalance -= tran.value;
+        }
+        if (confimationCount >= config.safeConfirmCount) {
+          balance.safeBalance -= tran.fee;
+          if (tran.transferSuccessful) balance.safeBalance -= tran.value;
+        }
+      }
+      if (tran.to === address) {
+        console.log(tran.to);
+        // Funds received --> add value and fee
+        if (confimationCount === 0 || tran.transferSuccessful)
+          balance.pendingBalance += tran.value;
+        if (confimationCount >= 1 && tran.transferSuccessful)
+          balance.confirmedBalance += tran.value;
+        if (
+          confimationCount >= config.safeConfirmCount &&
+          tran.transferSuccessful
+        )
+          balance.safeBalance += tran.value;
+      }
+    }
+
+    return balance;
   }
 
   /**

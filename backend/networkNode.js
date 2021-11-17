@@ -4,10 +4,11 @@ const uuid = require("uuid/v1");
 const port = process.argv[2];
 const rp = require("request-promise");
 const cors = require("cors");
+const { StatusCodes } = require("http-status-codes");
 
 const nodeAddress = uuid().split("-").join("");
 
-const bitcoin = new Blockchain();
+const noobchain = new Blockchain();
 
 const app = express();
 app.use(cors());
@@ -16,16 +17,38 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
 
 app.get("/blockchain", function (req, res) {
-  res.send(bitcoin);
+  res.send(noobchain);
 });
 
 //========================= Transactions =========================
+
+/**
+ * @notice - Displays the transaction history of a specific address
+ * @param address - Address of a wallet
+ */
+app.get("/address/:address/transactions", (req, res) => {
+  let address = req.params.address;
+  let tranHistory = noobchain.getTransactionHistory(address);
+  res.json(tranHistory);
+});
+
+/**
+ * @dev -  https://www.npmjs.com/package/http-status-codes
+ * @notice - Displays the balance of a specific address
+ * @param address - Address of a wallet
+ */
+app.get("/address/:address/balance", (req, res) => {
+  let address = req.params.address;
+  let balance = noobchain.getAccountBalance(address);
+  if (balance.errorMsg) res.status(StatusCodes.NOT_FOUND);
+  res.json(balance);
+});
 
 // adds a transaction to a nodes pending transactions
 app.post("/transaction", function (req, res) {
   const newTransaction = req.body;
   const blockIndex =
-    bitcoin.addTransactionToPendingTransactions(newTransaction);
+    noobchain.addTransactionToPendingTransactions(newTransaction);
   res.json({
     message: `Transaction will be added in block ${blockIndex}`,
   });
@@ -34,12 +57,12 @@ app.post("/transaction", function (req, res) {
 // creates a new transaction
 app.post("/transaction/broadcast", function (req, res) {
   const { sender, recipient, amount } = req.body;
-  const newTransaction = bitcoin.addTransaction(sender, recipient, amount);
-  bitcoin.addTransactionToPendingTransactions(newTransaction);
+  const newTransaction = noobchain.addTransaction(sender, recipient, amount);
+  noobchain.addTransactionToPendingTransactions(newTransaction);
 
   // broadcast the transaction to other nodes
   const requestPromises = [];
-  bitcoin.networkNodes.forEach((node) => {
+  noobchain.networkNodes.forEach((node) => {
     const requestOptions = {
       uri: `${node}/transaction`,
       method: "POST",
@@ -58,28 +81,28 @@ app.post("/transaction/broadcast", function (req, res) {
 //========================= Mining =========================
 
 app.get("/mine", function (req, res) {
-  const lastBlock = bitcoin.getLastBlock();
+  const lastBlock = noobchain.getLastBlock();
   const previousBlockHash = lastBlock.hash;
   const currentBlockData = {
-    transactions: bitcoin.pendingTransactions,
+    transactions: noobchain.pendingTransactions,
     index: lastBlock.index + 1,
   };
-  const nonce = bitcoin.proofOfWork(
+  const nonce = noobchain.proofOfWork(
     previousBlockHash,
     currentBlockData,
-    bitcoin.difficulty
+    noobchain.difficulty
   );
 
-  const blockHash = bitcoin.hashBlock(
+  const blockHash = noobchain.hashBlock(
     previousBlockHash,
     currentBlockData,
     nonce
   );
 
-  const newBlock = bitcoin.addBlock(nonce, previousBlockHash, blockHash);
+  const newBlock = noobchain.addBlock(nonce, previousBlockHash, blockHash);
   // broadcast the new block to other nodes
   const requestPromises = [];
-  bitcoin.networkNodes.forEach((node) => {
+  noobchain.networkNodes.forEach((node) => {
     const requestOptions = {
       uri: `${node}/receive-new-block`,
       method: "POST",
@@ -94,12 +117,12 @@ app.get("/mine", function (req, res) {
     .then(() => {
       // Broadcast miner reward transaction to all nodes
       const requestOptions = {
-        uri: `${bitcoin.currentNodeUrl}/transaction/broadcast`,
+        uri: `${noobchain.currentNodeUrl}/transaction/broadcast`,
         method: "POST",
         body: {
           sender: "00",
           recipient: nodeAddress,
-          amount: bitcoin.minerReward,
+          amount: noobchain.minerReward,
         },
         json: true,
       };
@@ -117,13 +140,13 @@ app.get("/mine", function (req, res) {
 
 app.post("/receive-new-block", function (req, res) {
   const newBlock = req.body.newBlock;
-  const lastBlock = bitcoin.getLastBlock();
+  const lastBlock = noobchain.getLastBlock();
   const correctHash = lastBlock.hash === newBlock.previousBlockHash;
   const correctIndex = lastBlock.index + 1 === newBlock.index;
 
   if (correctHash && correctIndex) {
-    bitcoin.chain.push(newBlock);
-    bitcoin.pendingTransactions = [];
+    noobchain.chain.push(newBlock);
+    noobchain.pendingTransactions = [];
     res.json({
       message: "New block received and accepted",
       newBlock,
@@ -147,12 +170,12 @@ app.post("/register-and-broadcast-node", function (req, res) {
   const newNodeUrl = req.body.newNodeUrl;
 
   // Step 1)
-  if (bitcoin.networkNodes.indexOf(newNodeUrl) == -1)
-    bitcoin.networkNodes.push(newNodeUrl);
+  if (noobchain.networkNodes.indexOf(newNodeUrl) == -1)
+    noobchain.networkNodes.push(newNodeUrl);
 
   // Step 2)
   const regNodesPromises = [];
-  bitcoin.networkNodes.forEach((networkNodesUrl) => {
+  noobchain.networkNodes.forEach((networkNodesUrl) => {
     const requestOptions = {
       uri: networkNodesUrl + "/register-node",
       method: "POST",
@@ -170,7 +193,10 @@ app.post("/register-and-broadcast-node", function (req, res) {
         uri: newNodeUrl + "/register-nodes-bulk",
         method: "POST",
         body: {
-          allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl],
+          allNetworkNodes: [
+            ...noobchain.networkNodes,
+            noobchain.currentNodeUrl,
+          ],
         },
         json: true,
       };
@@ -187,10 +213,11 @@ app.post("/register-and-broadcast-node", function (req, res) {
 
 app.post("/register-node", function (req, res) {
   const newNodeUrl = req.body.newNodeUrl;
-  const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
-  const notCurrentNode = bitcoin.currentNodeUrl !== newNodeUrl;
+  const nodeNotAlreadyPresent =
+    noobchain.networkNodes.indexOf(newNodeUrl) == -1;
+  const notCurrentNode = noobchain.currentNodeUrl !== newNodeUrl;
   if (nodeNotAlreadyPresent && notCurrentNode)
-    bitcoin.networkNodes.push(newNodeUrl);
+    noobchain.networkNodes.push(newNodeUrl);
   res.json({
     message: "New node registered successfully",
   });
@@ -200,10 +227,10 @@ app.post("/register-nodes-bulk", function (req, res) {
   const allNetworkNodes = req.body.allNetworkNodes;
   allNetworkNodes.forEach((networkNodesUrl) => {
     const nodeNotAlreadyPresent =
-      bitcoin.networkNodes.indexOf(networkNodesUrl) == -1;
-    const notCurrentNode = bitcoin.currentNodeUrl !== networkNodesUrl;
+      noobchain.networkNodes.indexOf(networkNodesUrl) == -1;
+    const notCurrentNode = noobchain.currentNodeUrl !== networkNodesUrl;
     if (nodeNotAlreadyPresent && notCurrentNode)
-      bitcoin.networkNodes.push(networkNodesUrl);
+      noobchain.networkNodes.push(networkNodesUrl);
   });
   res.json({
     message: "Bulk registration successful",
@@ -217,7 +244,7 @@ app.get("/consensus", function (req, res) {
   const requestPromises = [];
 
   // get all network nodes and make a request to each one
-  bitcoin.networkNodes.forEach((networkNodesUrl) => {
+  noobchain.networkNodes.forEach((networkNodesUrl) => {
     const requestOptions = {
       uri: networkNodesUrl + "/blockchain",
       method: "GET",
@@ -230,7 +257,7 @@ app.get("/consensus", function (req, res) {
   Promise.all(requestPromises)
     .then((blockchains) => {
       // check if the length of the blockchains is greater than our current node blockchain
-      const currentChainLength = bitcoin.chain.length;
+      const currentChainLength = noobchain.chain.length;
       let maxChainLength = currentChainLength;
       let newLongestChain = null;
       let newPendingTransactions = null;
@@ -245,18 +272,18 @@ app.get("/consensus", function (req, res) {
 
       if (
         !newLongestChain ||
-        (newLongestChain && !bitcoin.chainIsValid(newLongestChain))
+        (newLongestChain && !noobchain.chainIsValid(newLongestChain))
       ) {
         res.json({
           message: "Current chain has not been replaced",
-          chain: bitcoin.chain,
+          chain: noobchain.chain,
         });
       } else {
-        bitcoin.chain = newLongestChain;
-        bitcoin.pendingTransactions = newPendingTransactions;
+        noobchain.chain = newLongestChain;
+        noobchain.pendingTransactions = newPendingTransactions;
         res.json({
           message: "This chain has been replaced",
-          chain: bitcoin.chain,
+          chain: noobchain.chain,
         });
       }
     })
@@ -266,19 +293,19 @@ app.get("/consensus", function (req, res) {
 //========================= Block Explorer =========================
 app.get("/block/:blockHash", (req, res) => {
   const blockHash = req.params.blockHash;
-  const correctBlock = bitcoin.getBlock(blockHash);
+  const correctBlock = noobchain.getBlock(blockHash);
   res.json({ block: correctBlock });
 });
 
 app.get("/transaction/:transactionId", (req, res) => {
   const transactionId = req.params.transactionId;
-  const transactionData = bitcoin.getTransaction(transactionId);
+  const transactionData = noobchain.getTransaction(transactionId);
   res.json({ transaction: transactionData });
 });
 
 app.get("/address/:address", (req, res) => {
   const address = req.params.address;
-  const addressData = bitcoin.getAddressData(address);
+  const addressData = noobchain.getAddressData(address);
   res.json({ addressData: addressData });
 });
 
