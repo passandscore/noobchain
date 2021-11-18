@@ -2,12 +2,22 @@ import Head from "next/head";
 import styles from "../styles/Wallet.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { lockState, nodeList } from "../recoil/atoms";
+import AccountInfo from "../Components/Wallet/AccountInfo";
 
 export default function Wallet() {
   const [balance, setBalance] = useState(0);
+  const [userAddress, setUserAddress] = useState("");
   const [showDetails, setShowDetails] = useState(false);
+  const [selectedNode, setSelectedNode] = useState("");
+
+  const nodes = useRecoilValue(nodeList);
 
   useEffect(() => {
+    setUserAddress(sessionStorage.getItem("address"));
+
+    console.log(nodes);
     async function getBalance() {
       let [balances] = await Promise.all([
         axios.get(`http://localhost:3001/address/0e5092f2dbcf00995b1aae95bc7ec8a1b6596fb8
@@ -48,6 +58,7 @@ export default function Wallet() {
                 </div>
               </div>
               <div className="card-body">
+                {/* Recipient */}
                 <div className="input-group mb-3 p-2">
                   <div className="input-group-prepend">
                     <span className="input-group-text" id="basic-addon3">
@@ -60,22 +71,38 @@ export default function Wallet() {
                     id="basic-url"
                     aria-describedby="basic-addon3"
                     placeholder="0xx..."
+                    value={userAddress}
                   />
                 </div>
+
+                {/* Select Node Url */}
                 <div className="input-group mb-3 p-2">
                   <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon3">
-                      Node URL
-                    </span>
+                    <label
+                      className="input-group-text"
+                      htmlFor="inputGroupSelect01"
+                    >
+                      Node Url
+                    </label>
                   </div>
-                  <input
-                    type="text"
+                  <select
+                    value={selectedNode}
                     className="form-control"
-                    id="basic-url"
-                    aria-describedby="basic-addon3"
-                    value="http://localhost:3001"
-                  />
+                    id="inputGroupSelect01"
+                    onChange={(e) => {
+                      setSelectedNode(e.target.value);
+                    }}
+                  >
+                    {nodes &&
+                      nodes.map((node, index) => (
+                        <option key={index} value={node}>
+                          {node}
+                        </option>
+                      ))}
+                  </select>
                 </div>
+
+                {/* Button */}
                 <div className="p-2">
                   <button
                     type="button"
@@ -127,27 +154,9 @@ export default function Wallet() {
           </div>
         </div>
       </section>
+
+      {/* Display Account Information */}
+      <AccountInfo />
     </>
   );
 }
-
-// // This function gets called at build time
-// export async function getStaticProps() {
-//   // Return faucet balance from blockchain
-//   let [balances] = await Promise.all([
-//     axios.get(
-//       "http://localhost/address/0e5092f2dbcf00995b1aae95bc7ec8a1b6596fb8/balance"
-//     ),
-//     // axios.get(`${nodeUrl}/address/${userAddress}/balance`),
-//   ]);
-
-//   // By returning { props: { posts } }, the Blog component
-//   // will receive `posts` as a prop at build time
-//   return {
-//     props: {
-//       balances,
-//     },
-//   };
-// }
-
-// export default Wallet;

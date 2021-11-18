@@ -19,7 +19,7 @@ export default function OpenExistingWallet() {
   const handleClick = () => {
     if (!userPrivateKey) {
       toast.error("Please enter a private key.", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
       return;
@@ -44,7 +44,7 @@ export default function OpenExistingWallet() {
     setWalletStatus("unlocked");
 
     toast.success("Wallet successfully unlocked!", {
-      position: "top-right",
+      position: "bottom-right",
       theme: "colored",
     });
   };
@@ -93,7 +93,7 @@ export default function OpenExistingWallet() {
       </div>
 
       {/* Display Account Information */}
-      {walletStatus == "unlocked" && <AccountInfo />}
+      <AccountInfo />
     </>
   );
 }

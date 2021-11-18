@@ -56,7 +56,7 @@ export default function Wallet() {
       </div>
 
       {/* Display Account Information */}
-      {walletStatus == "unlocked" && <AccountInfo />}
+      <AccountInfo />
     </>
   );
 }

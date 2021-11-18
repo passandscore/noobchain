@@ -6,7 +6,6 @@ const faucetPrivateKey =
   "4a366156897c6145721bb2803fa42d97f1d2e974b5f8cc27e99b530ac20bba3";
 const faucetPublicKey = CryptoUtils.privateKeyToPublicKey(faucetPrivateKey);
 const faucetAddress = CryptoUtils.publicKeyToAddress(faucetPublicKey);
-console.log("faucetAddress", faucetAddress);
 
 const nullAddress = "0000000000000000000000000000000000000000";
 const nullPubKey =

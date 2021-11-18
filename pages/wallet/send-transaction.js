@@ -39,7 +39,7 @@ export default function SendTransaction() {
 
     if (!validAddress) {
       toast.error("Invalid Recipient Address!", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
       return;
@@ -47,7 +47,7 @@ export default function SendTransaction() {
 
     if (!validValue) {
       toast.error("Invalid Value!", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
       return;
@@ -55,7 +55,7 @@ export default function SendTransaction() {
 
     if (!value || !recipient) {
       toast.error("Ensure you have a recipient & value", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
       return;
@@ -115,12 +115,12 @@ export default function SendTransaction() {
 
       if (error) {
         toast.error(error, {
-          position: "top-right",
+          position: "bottom-right",
           theme: "colored",
         });
       } else {
         toast.success("Transaction successfully sent!", {
-          position: "top-right",
+          position: "bottom-right",
           theme: "colored",
         });
 
@@ -137,7 +137,7 @@ export default function SendTransaction() {
     } catch (error) {
       console.log(error);
       toast.error("Transaction failed to send!", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
     }
@@ -291,7 +291,7 @@ export default function SendTransaction() {
       )}
 
       {/* Display Account Information */}
-      {walletStatus == "unlocked" && <AccountInfo />}
+      <AccountInfo />
     </>
   );
 }

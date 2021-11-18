@@ -1,9 +1,13 @@
 import { Toast } from "react-bootstrap";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { defaultNode } from "../../recoil/atoms";
 
 const AccountInfo = () => {
   const [address, setAddress] = useState("");
+  const node = useRecoilValue(defaultNode);
 
   useEffect(() => {
     setAddress(sessionStorage.getItem("address"));
@@ -28,10 +32,14 @@ const AccountInfo = () => {
             alt=""
           />
           <strong className="me-auto mx-1">Address:</strong>
-          {address}
+          {address ? (
+            <Link href="/explorer">{address}</Link>
+          ) : (
+            <Link href="/wallet">Connect to wallet</Link>
+          )}
         </Toast.Header>
         <Toast.Body className="text-center">
-          <strong> You are currently connected to http//localhost:3001 </strong>
+          <strong>You are currently connected to {node} </strong>
         </Toast.Body>
       </Toast>
     </div>

@@ -22,7 +22,7 @@ export default function AccountBalances() {
     console.log("handleClick");
     if (!userAddress) {
       toast.error("Please enter an address.", {
-        position: "top-right",
+        position: "bottom-right",
         theme: "colored",
       });
       return;
@@ -122,7 +122,7 @@ export default function AccountBalances() {
       </div>
 
       {/* Display Account Information */}
-      {walletStatus == "unlocked" && <AccountInfo />}
+      <AccountInfo />
     </>
   );
 }

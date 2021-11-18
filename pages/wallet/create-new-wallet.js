@@ -34,7 +34,7 @@ export default function CreateNewWallet() {
     setWalletStatus("unlocked");
 
     toast.success("Wallet created successfully!", {
-      position: "top-right",
+      position: "bottom-right",
       theme: "colored",
     });
   };
@@ -71,7 +71,7 @@ export default function CreateNewWallet() {
       </div>
 
       {/* Display Account Information */}
-      {walletStatus == "unlocked" && <AccountInfo />}
+      <AccountInfo />
     </>
   );
 }

@@ -10,6 +10,17 @@ const nodeAddress = uuid().split("-").join("");
 
 const noobchain = new Blockchain();
 
+let node = {
+  nodeId:
+    new Date().getTime().toString(16) + Math.random().toString(16).substring(2),
+  host: noobchain.currentNodeUrl.split("/")[2],
+  port: noobchain.currentNodeUrl.split(":")[2],
+  selfUrl: noobchain.currentNodeUrl,
+  peers: noobchain.networkNodes,
+  // chain: noobchain.chain,
+  // chainId: node.chain.blocks[0].blockHash,
+};
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -18,6 +29,22 @@ app.use(express.static(__dirname + "/public"));
 
 app.get("/blockchain", function (req, res) {
   res.send(noobchain);
+});
+
+/**
+ * @notice - Displays statistics about the node
+ */
+app.get("/info", (req, res) => {
+  res.json({
+    about: "NoobChain/v1",
+    nodeUrl: node.selfUrl,
+    peers: node.peers.length,
+    difficulty: node.chain.difficulty,
+    blocks: node.chain.blocks.length,
+    cumulativeDifficulty: node.chain.calcCumulativeDifficulty(),
+    confirmedTransactions: node.chain.getConfirmedTransactions().length,
+    pendingTransactions: node.chain.pendingTransactions.length,
+  });
 });
 
 //========================= Transactions =========================
@@ -172,7 +199,7 @@ app.post("/receive-new-block", function (req, res) {
   }
 });
 
-/**  ========================= Nodes =========================
+/**  ========================= Register Nodes =========================
  * Step 1) A new node will call the /register-and-broadcast-node endpoint of an existing node.
  * That node will be registered within the current node then "broadcasted" to all other nodes.
  * Step 2) The existing node will initate the broadcast by calling /register-node of all nodes in the network.
@@ -251,17 +278,15 @@ app.post("/register-nodes-bulk", function (req, res) {
   });
 });
 
+/**  ========================= Unregister Nodes =========================
+ * Step 1) A new node will call the /register-and-broadcast-node endpoint of an existing node.
+ * That node will be broadcasted to all other nodes and removed from the network.
+ * Step 2) The current node will initate then remove the old node from its database.
+ */
 app.post("/unregister-and-broadcast-node", function (req, res) {
   const oldNodeURL = req.body.oldNodeURL;
 
   // Step 1)
-  if (noobchain.networkNodes.includes(oldNodeURL)) {
-    noobchain.networkNodes = noobchain.networkNodes.filter(
-      (node) => node !== oldNodeURL
-    );
-  }
-
-  // Step 2)
   const removeNodePromise = [];
   noobchain.networkNodes.forEach((networkNodesUrl) => {
     const requestOptions = {
@@ -274,9 +299,15 @@ app.post("/unregister-and-broadcast-node", function (req, res) {
     removeNodePromise.push(rp(requestOptions));
   });
 
-  // Step 3)
+  // Step 2)
   Promise.all(removeNodePromise)
     .then(() => {
+      if (noobchain.networkNodes.includes(oldNodeURL)) {
+        noobchain.networkNodes = noobchain.networkNodes.filter(
+          (node) => node !== oldNodeURL
+        );
+      }
+
       res.json({
         message: "Node removed from network successfully",
       });
@@ -285,10 +316,14 @@ app.post("/unregister-and-broadcast-node", function (req, res) {
 });
 
 app.post("/unregister-node", function (req, res) {
-  const oldNodeURL = req.body.oldNodeURL;
-  noobchain.networkNodes = noobchain.networkNodes.filter(
-    (node) => node !== oldNodeURL
-  );
+  if (noobchain.currentNodeUrl === req.body.oldNodeURL) {
+    noobchain.networkNodes = [];
+  } else {
+    const oldNodeURL = req.body.oldNodeURL;
+    noobchain.networkNodes = noobchain.networkNodes.filter(
+      (node) => node !== oldNodeURL
+    );
+  }
   res.json({
     message: "Node removed successfully",
   });
