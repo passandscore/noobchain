@@ -3,15 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { defaultNode } from "../../recoil/atoms";
+import { defaultNode, address } from "../../recoil/atoms";
 
 const AccountInfo = () => {
-  const [address, setAddress] = useState("");
+  // const [address, setAddress] = useState("");
   const node = useRecoilValue(defaultNode);
+  const walletAddress = useRecoilValue(address);
 
-  useEffect(() => {
-    setAddress(sessionStorage.getItem("address"));
-  }, []);
+  // useEffect(() => {
+  //   setAddress(sessionStorage.getItem("address"));
+  // }, []);
 
   return (
     <div
@@ -22,7 +23,7 @@ const AccountInfo = () => {
         zIndex: "4",
       }}
     >
-      <Toast className="ml-10" style={{ width: "26rem" }}>
+      <Toast className="ml-10 bg-light border-info" style={{ width: "26rem" }}>
         <Toast.Header closeButton={false}>
           <Image
             src="/images/block.png"
@@ -32,8 +33,8 @@ const AccountInfo = () => {
             alt=""
           />
           <strong className="me-auto mx-1">Address:</strong>
-          {address ? (
-            <Link href="/explorer">{address}</Link>
+          {walletAddress ? (
+            <Link href="/explorer">{walletAddress}</Link>
           ) : (
             <Link href="/wallet">Connect to wallet</Link>
           )}

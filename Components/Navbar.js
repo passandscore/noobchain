@@ -29,13 +29,7 @@ const Navbar = () => {
                 <a className="nav-link fs-5">Faucet</a>
               </Link>
               <Link href="/wallet">
-                <a
-                  className="nav-link fs-5"
-                  // target="_blank"
-                  // rel="noopener noreferrer"
-                >
-                  Wallet
-                </a>
+                <a className="nav-link fs-5">Wallet</a>
               </Link>
               <Link href="/miner">
                 <a className="nav-link fs-5">Miner</a>

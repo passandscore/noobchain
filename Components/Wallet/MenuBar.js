@@ -1,10 +1,11 @@
 import Link from "next/link";
 import styles from "../../styles/Wallet.module.css";
-import { useRecoilState } from "recoil";
-import { lockState } from "../../recoil/atoms";
+import { useRecoilState, useResetRecoilState } from "recoil";
+import { lockState, address } from "../../recoil/atoms";
 
 const Navbar = () => {
   const [walletStatus, setWalletStatus] = useRecoilState(lockState);
+  const resetLockState = useResetRecoilState(address);
 
   const handleLogout = () => {
     console.log(walletStatus);
@@ -12,6 +13,7 @@ const Navbar = () => {
     sessionStorage.removeItem("pubKey");
     sessionStorage.removeItem("address");
     setWalletStatus("locked");
+    resetLockState();
   };
 
   return (

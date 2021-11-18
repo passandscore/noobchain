@@ -1,17 +1,409 @@
 import Head from "next/head";
+import Link from "next/link";
+import Image from "next/image";
 import styles from "../styles/Wallet.module.css";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+import { useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { miningMode, address } from "../recoil/atoms";
+import AccountInfo from "../Components/Wallet/AccountInfo";
+import { Modal, Button } from "react-bootstrap";
 
 export default function Miner() {
+  const [mode, setMode] = useRecoilState(miningMode);
+  const walletAddress = useRecoilValue(address);
+
+  const [autoDetails, setAutoDetails] = useState(true);
+  const [show, setShow] = useState(false);
+  const [nodeInfo, setNodeInfo] = useState([]);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const [allNodes, setAllNodes] = useState([
+    { url: "http://localhost:3001", isMining: false },
+    { url: "http://localhost:3002", isMining: false },
+    { url: "http://localhost:3003", isMining: false },
+    { url: "http://localhost:3004", isMining: false },
+    { url: "http://localhost:3005", isMining: false },
+  ]);
+
+  const handleModeChange = (e) => {
+    const newMode = e.target.value;
+    setMode(newMode);
+
+    if (newMode === "manual") {
+      setAutoDetails(false);
+    } else {
+      handleAutomaticMineClick();
+    }
+  };
+
+  const handleClick = async (nodeUrl) => {
+    const result = await axios.get(`${nodeUrl}/info`);
+    setNodeInfo(result.data);
+    handleShow();
+  };
+
+  const handleManualMineClick = async (nodeToMine) => {
+    // Ensure that user has a wallet address
+    if (!walletAddress) {
+      toast.error("Require your mining address. Unlock your wallet.", {
+        position: "bottom-right",
+        theme: "colored",
+      });
+      return;
+    }
+
+    // update the node list to show that the node is mining
+    let updateNodeList = allNodes.map((node) => {
+      if (node.url === nodeToMine) {
+        node.isMining = true;
+      }
+      return node;
+    });
+
+    setAllNodes(updateNodeList);
+
+    const miningResult = await axios.get(`${nodeToMine}/mine`);
+
+    if (miningResult) {
+      // Apply extra time to give a better impression of mining
+      setTimeout(() => {
+        let updateNodeList = allNodes.map((node) => {
+          if (node.url === nodeToMine) {
+            node.isMining = false;
+          }
+          return node;
+        });
+        toast.success(result, {
+          position: "bottom-right",
+          theme: "colored",
+        });
+
+        // Update the node list
+        setAllNodes(updateNodeList);
+      }, 5000);
+
+      const result = miningResult.data.message;
+    } else {
+      toast.error("Unable to mine block.", {
+        position: "bottom-right",
+        theme: "colored",
+      });
+    }
+  };
+
+  const handleAutomaticMineClick = async () => {
+    // update the node list to show that the node is mining
+  };
+
   return (
     <>
       <Head>
-        <title>NOOB | Faucet</title>
+        <title>NOOB | Mining</title>
       </Head>
+
+      <ToastContainer position="top-center" pauseOnFocusLoss={false} />
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>{nodeInfo.nodeUrl}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-break">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th scope="row">About</th>
+                <td>{nodeInfo.about}</td>
+              </tr>
+              <tr>
+                <th scope="row">Blocks</th>
+                <td>{nodeInfo.blocks}</td>
+              </tr>
+              <tr>
+                <th scope="row">Difficulty</th>
+                <td>{nodeInfo.difficulty}</td>
+              </tr>
+              <tr>
+                <th scope="row">Peers</th>
+                <td>{nodeInfo.peers}</td>
+              </tr>
+              <tr>
+                <th scope="row">Pending Transactions</th>
+                <td>{nodeInfo.pendingTransactions}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Modal.Body>
+      </Modal>
+
       <div
         className={styles.background}
         style={{ display: "flex", justifyContent: "center" }}
       ></div>
-      <h1 className="display-5">Miner</h1>;
+
+      {/* Title */}
+      <div className="container mt-5">
+        <div className="row ">
+          <div className="col-sm-2">
+            {" "}
+            <Image
+              src="/images/mining.png"
+              alt="blocks-in-hand"
+              width="175px"
+              height="175px"
+            />
+          </div>
+          <div className="col-sm-10">
+            <h1 className="display-4">Mining</h1>
+            <div className="col-lg-auto">
+              Noob Mining is a blockchain based application that allows you to
+              mine a blocks and receive NOOB coins. The miner will mine a block
+              once a pending transaction is confirmed. You can also register a
+              node to the network and have it mine blocks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mining Modes */}
+      <div className="container mb-5 d-flex justify-content-center">
+        <div className="btn-group" role="group" aria-label="Basic example">
+          <button
+            type="button"
+            value="manual"
+            onClick={(e) => handleModeChange(e)}
+            className={`${
+              mode == "automatic"
+                ? "btn btn-secondary btn-lg"
+                : "btn btn-primary btn-lg"
+            }`}
+          >
+            Manual
+          </button>
+
+          <button
+            type="button"
+            value="automatic"
+            onClick={(e) => handleModeChange(e)}
+            className={`${
+              mode == "automatic"
+                ? "btn btn-primary btn-lg"
+                : "btn btn-secondary btn-lg"
+            }`}
+          >
+            Automatic
+          </button>
+        </div>
+      </div>
+
+      {/* Manual Mode */}
+      {mode === "manual" ? (
+        <>
+          <div className="container w-75 d-flex justify-content-center">
+            <table className="table" style={{ maxWidth: "60rem" }}>
+              <thead>
+                <tr>
+                  <th scope="col" className="text-center">
+                    Details
+                  </th>
+                  <th scope="col" className="text-center">
+                    Location
+                  </th>
+
+                  <th scope="col" className="text-center">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {allNodes.map((node, index) => (
+                  <tr key={index}>
+                    <td className="text-center">
+                      <Link href="">
+                        <a
+                          onClick={() => {
+                            handleClick(node.url);
+                          }}
+                        >
+                          Node {index + 1}
+                        </a>
+                      </Link>
+                    </td>
+                    <td className="text-center">
+                      <Link href={`${node.url}/blockchain`}>
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "blue" }}
+                        >
+                          {node.url}
+                        </a>
+                      </Link>
+                    </td>
+
+                    <td className="justify-content-center d-flex">
+                      {!node.isMining ? (
+                        <button
+                          type="button"
+                          className="btn btn-success btn-sm px-4"
+                          value={node.url}
+                          onClick={(e) => {
+                            handleManualMineClick(e.target.value);
+                          }}
+                        >
+                          Mine
+                        </button>
+                      ) : (
+                        <Image
+                          src="/images/mining-progress.gif"
+                          alt="blocks-in-hand"
+                          width="50px"
+                          height="30px"
+                        />
+                      )}
+                    </td>
+                  </tr>
+
+                  // <tr key={index}>
+                  //   <td className="text-center">
+                  //     <Link href="">
+                  //       <a
+                  //         onClick={() => {
+                  //           handleClick(url);
+                  //         }}
+                  //       >
+                  //         Node {index + 1}
+                  //       </a>
+                  //     </Link>
+                  //   </td>
+                  //   <td className="text-center">
+                  //     <Link href={`${url}/blockchain`}>
+                  //       <a
+                  //         target="_blank"
+                  //         rel="noopener noreferrer"
+                  //         style={{ color: "blue" }}
+                  //       >
+                  //         {url}
+                  //       </a>
+                  //     </Link>
+                  //   </td>
+
+                  //   <td className="justify-content-center d-flex">
+                  //     {!isMining ? (
+                  //       <button
+                  //         type="button"
+                  //         className="btn btn-success btn-sm px-4"
+                  //         value={url}
+                  //         onClick={(e) => {
+                  //           handleManualMineClick(e.target.value);
+                  //         }}
+                  //       >
+                  //         Mine
+                  //       </button>
+                  //     ) : (
+                  //       <Image
+                  //         src="/images/mining-progress-1.gif"
+                  //         alt="blocks-in-hand"
+                  //         width="50px"
+                  //         height="30px"
+                  //       />
+                  //     )}
+                  //   </td>
+                  // </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        // Automatic Mode
+
+        <>
+          <div className="container w-75 d-flex justify-content-center">
+            <table className="table" style={{ maxWidth: "60rem" }}>
+              <thead>
+                <tr>
+                  <th scope="col" className="text-center">
+                    Details
+                  </th>
+                  <th scope="col" className="text-center">
+                    Location
+                  </th>
+                  <th scope="col" className="text-center">
+                    Status
+                  </th>
+                  <th scope="col" className="text-center">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              {/* <tbody>
+                {allNodes.map((node, index) => (
+                  <tr key={index}>
+                    <td className="text-center">
+                      <Link href="">
+                        <a
+                          onClick={() => {
+                            handleClick(node);
+                          }}
+                        >
+                          Node {index + 1}
+                        </a>
+                      </Link>
+                    </td>
+                    <td className="text-center">
+                      <Link href={`${node}/blockchain`}>
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "blue" }}
+                        >
+                          {node}
+                        </a>
+                      </Link>
+                    </td>
+                    <td className="text-center">
+                      {currentNodes.includes(node) ? "Mining" : "-"}
+                    </td>
+                    <td className="justify-content-center d-flex">
+                      {!currentNodes.includes(node) ? (
+                        <button
+                          type="button"
+                          className="btn btn-success btn-sm px-4"
+                          value={node}
+                          onClick={(e) => {
+                            addNode(e.target.value);
+                          }}
+                        >
+                          Start
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm mx-2 px-4"
+                          value={node}
+                          onClick={(e) => {
+                            removeNode(e.target.value);
+                          }}
+                        >
+                          Stop
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody> */}
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Display Account Information */}
+      <AccountInfo />
     </>
   );
 }

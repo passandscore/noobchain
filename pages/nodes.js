@@ -119,7 +119,6 @@ export default function Nodes() {
   };
 
   const handleClick = async (nodeUrl) => {
-    console.log(nodeUrl);
     const result = await axios.get(`${nodeUrl}/info`);
     setNodeInfo(result.data);
     handleShow();
@@ -207,7 +206,7 @@ export default function Nodes() {
 
       {/* Add Node to Network */}
       <div className="container w-75 d-flex justify-content-center">
-        <table className="table" style={{ maxWidth: "50rem" }}>
+        <table className="table" style={{ maxWidth: "60rem" }}>
           <thead>
             <tr>
               <th scope="col" className="text-center">
@@ -280,7 +279,7 @@ export default function Nodes() {
                   {!currentNodes.includes(node) ? (
                     <button
                       type="button"
-                      className="btn btn-success btn-sm"
+                      className="btn btn-success btn-sm px-4"
                       value={node}
                       onClick={(e) => {
                         addNode(e.target.value);
@@ -291,7 +290,7 @@ export default function Nodes() {
                   ) : (
                     <button
                       type="button"
-                      className="btn btn-danger btn-sm mx-2"
+                      className="btn btn-danger btn-sm mx-2 px-4"
                       value={node}
                       onClick={(e) => {
                         removeNode(e.target.value);

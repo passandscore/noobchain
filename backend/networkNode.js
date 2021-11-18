@@ -144,7 +144,7 @@ app.get("/mine", function (req, res) {
   const requestPromises = [];
   noobchain.networkNodes.forEach((node) => {
     const requestOptions = {
-      uri: `$http://localhost:3001/receive-new-block`,
+      uri: `${node}/receive-new-block`,
       method: "POST",
       body: { newBlock },
       json: true,

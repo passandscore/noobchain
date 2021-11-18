@@ -14,3 +14,13 @@ export const defaultNode = atom({
   key: "defaultNode",
   default: "http://localhost:3001",
 });
+
+export const address = atom({
+  key: "address",
+  default: "",
+});
+
+export const miningMode = atom({
+  key: "miningMode",
+  default: "automatic",
+});

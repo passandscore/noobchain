@@ -1,16 +1,16 @@
 import Head from "next/head";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import elliptic from "../../lib/elliptic";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
-import { lockState } from "../../recoil/atoms.js";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
+import { lockState, address } from "../../recoil/atoms.js";
 import { saveKeysInSession } from "../../lib/session";
 
 export default function CreateNewWallet() {
   const [walletStatus, setWalletStatus] = useRecoilState(lockState);
+  const [walletAddress, setWalletAddress] = useRecoilState(address);
+  const [isCreated, setIsCreated] = useState(false);
 
   const secp256k1 = new elliptic.ec("secp256k1");
   const textAreaRef = useRef("");
@@ -31,12 +31,9 @@ export default function CreateNewWallet() {
       "Extracted blockchain address: " +
       sessionStorage["address"];
 
+    setIsCreated(true);
     setWalletStatus("unlocked");
-
-    toast.success("Wallet created successfully!", {
-      position: "bottom-right",
-      theme: "colored",
-    });
+    setWalletAddress(sessionStorage["address"]);
   };
 
   return (
@@ -45,7 +42,6 @@ export default function CreateNewWallet() {
         <title>NOOB Wallet | New Wallet</title>
       </Head>
 
-      <ToastContainer position="top-center" pauseOnFocusLoss={false} />
       <MenuBar />
 
       <div className="container">
@@ -59,14 +55,25 @@ export default function CreateNewWallet() {
               ref={textAreaRef}
             ></textarea>
           </div>
-          <button
-            type="button"
-            value="Generate Now"
-            className="btn btn-primary btn mt-3 w-100"
-            onClick={handleClick}
-          >
-            Generate Now
-          </button>
+          {!isCreated ? (
+            <button
+              type="button"
+              value="Generate Now"
+              className="btn btn-primary btn mt-3 w-100"
+              onClick={handleClick}
+            >
+              Generate Now
+            </button>
+          ) : (
+            <button
+              type="button"
+              value="Generate Now"
+              className="btn btn-primary btn mt-3 w-100"
+              disabled
+            >
+              Wallet Created Successfully!
+            </button>
+          )}
         </form>
       </div>
 

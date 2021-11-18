@@ -11,6 +11,7 @@
     "node_3": "nodemon --watch dev -e js backend/networkNode.js 3003 http://localhost:3003",
     "node_4": "nodemon --watch dev -e js backend/networkNode.js 3004 http://localhost:3004",
     "node_5": "nodemon --watch dev -e js backend/networkNode.js 3005 http://localhost:3005",
+    "miner": "nodemon --watch dev -e js backend/networkNode.js 9000 http://localhost:9000",
     "client": "npm run dev",
     "noobchain": "concurrently \"npm run blockchain\" \"npm run client\" \"npm run node_2\" \"npm run node_3\" \"npm run node_4\" \"npm run node_5\""
   },

@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
-import { lockState } from "../../recoil/atoms";
+import { lockState, address } from "../../recoil/atoms";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import elliptic from "../../lib/elliptic";
@@ -12,6 +12,7 @@ import { saveKeysInSession } from "../../lib/session";
 export default function OpenExistingWallet() {
   const [userPrivateKey, setUserPrivateKey] = useState("");
   const [walletStatus, setWalletStatus] = useRecoilState(lockState);
+  const [walletAddress, setWalletAddress] = useRecoilState(address);
 
   const textAreaRef = useRef("");
   const secp256k1 = new elliptic.ec("secp256k1");
@@ -42,6 +43,7 @@ export default function OpenExistingWallet() {
       sessionStorage["address"];
 
     setWalletStatus("unlocked");
+    setWalletAddress(sessionStorage["address"]);
 
     toast.success("Wallet successfully unlocked!", {
       position: "bottom-right",
