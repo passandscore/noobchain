@@ -37,13 +37,13 @@ app.get("/blockchain", function (req, res) {
 app.get("/info", (req, res) => {
   res.json({
     about: "NoobChain/v1",
-    nodeUrl: node.selfUrl,
-    peers: node.peers.length,
-    difficulty: node.chain.difficulty,
-    blocks: node.chain.blocks.length,
-    cumulativeDifficulty: node.chain.calcCumulativeDifficulty(),
-    confirmedTransactions: node.chain.getConfirmedTransactions().length,
-    pendingTransactions: node.chain.pendingTransactions.length,
+    nodeUrl: noobchain.currentNodeUrl,
+    peers: noobchain.networkNodes.length,
+    difficulty: noobchain.difficulty,
+    blocks: noobchain.chain.length,
+    // cumulativeDifficulty: noobchain.chain.calcCumulativeDifficulty(),
+    // confirmedTransactions: noobchain.chain.getConfirmedTransactions().length,
+    pendingTransactions: noobchain.pendingTransactions.length,
   });
 });
 

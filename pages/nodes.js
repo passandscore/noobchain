@@ -8,11 +8,16 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { nodeList, defaultNode } from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
+import { Modal, Button } from "react-bootstrap";
 
 export default function Nodes() {
   const [currentNodes, setCurrentNodes] = useRecoilState(nodeList);
   const [selectedNode, setSelectedNode] = useState("");
   const [updateUserNode, setUpdateUserNode] = useRecoilState(defaultNode);
+  const [show, setShow] = useState(false);
+  const [nodeInfo, setNodeInfo] = useState([]);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const [allNodes, setAllNodes] = useState([
     "http://localhost:3002",
     "http://localhost:3003",
@@ -74,7 +79,6 @@ export default function Nodes() {
       body,
       config
     );
-    console.log(register);
 
     const result = register.data.message;
 
@@ -88,8 +92,6 @@ export default function Nodes() {
       });
 
       //Update the status of the node on the view
-      console.log(nodeUrl);
-      console.log(currentNodes);
       if (currentNodes.includes(nodeUrl)) {
         setCurrentNodes(currentNodes.filter((node) => node !== nodeUrl));
       }
@@ -105,6 +107,23 @@ export default function Nodes() {
       });
     }
   };
+
+  const handleNodeChange = (e) => {
+    const newNode = e.target.value;
+    setSelectedNode(newNode);
+    setUpdateUserNode(newNode);
+    toast.info(`Now connected to ${newNode}`, {
+      position: "bottom-right",
+      theme: "colored",
+    });
+  };
+
+  const handleClick = async (nodeUrl) => {
+    console.log(nodeUrl);
+    const result = await axios.get(`${nodeUrl}/info`);
+    setNodeInfo(result.data);
+    handleShow();
+  };
   return (
     <>
       <Head>
@@ -112,6 +131,38 @@ export default function Nodes() {
       </Head>
 
       <ToastContainer position="top-center" pauseOnFocusLoss={false} />
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>{nodeInfo.nodeUrl}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-break">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th scope="row">About</th>
+                <td>{nodeInfo.about}</td>
+              </tr>
+              <tr>
+                <th scope="row">Blocks</th>
+                <td>{nodeInfo.blocks}</td>
+              </tr>
+              <tr>
+                <th scope="row">Difficulty</th>
+                <td>{nodeInfo.difficulty}</td>
+              </tr>
+              <tr>
+                <th scope="row">Peers</th>
+                <td>{nodeInfo.peers}</td>
+              </tr>
+              <tr>
+                <th scope="row">Pending Transactions</th>
+                <td>{nodeInfo.pendingTransactions}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Modal.Body>
+      </Modal>
 
       <div
         className={styles.background}
@@ -140,8 +191,7 @@ export default function Nodes() {
               className="form-control"
               id="inputGroupSelect01"
               onChange={(e) => {
-                setSelectedNode(e.target.value);
-                setUpdateUserNode(e.target.value);
+                handleNodeChange(e);
               }}
             >
               {currentNodes &&
@@ -161,7 +211,7 @@ export default function Nodes() {
           <thead>
             <tr>
               <th scope="col" className="text-center">
-                Type
+                Details
               </th>
               <th scope="col" className="text-center">
                 Location
@@ -177,10 +227,20 @@ export default function Nodes() {
 
           <tbody>
             <tr>
-              <td className="text-center">Node 1</td>
+              <td className="text-center">
+                <Link href="">
+                  <a
+                    onClick={() => {
+                      handleClick("http://localhost:3001");
+                    }}
+                  >
+                    Node 1
+                  </a>
+                </Link>
+              </td>
               <td className="text-center">
                 <Link href="http://localhost:3001/blockchain">
-                  <a className="" target="_blank" rel="noopener noreferrer">
+                  <a target="_blank" rel="noopener noreferrer">
                     http://localhost:3001
                   </a>
                 </Link>
@@ -191,16 +251,27 @@ export default function Nodes() {
 
             {allNodes.map((node, index) => (
               <tr key={index}>
-                <td className="text-center">Node {index + 2}</td>
                 <td className="text-center">
-                  <a
-                    href={`${node}/blockchain`}
-                    className=""
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {node}
-                  </a>
+                  <Link href="">
+                    <a
+                      onClick={() => {
+                        handleClick(node);
+                      }}
+                    >
+                      Node {index + 2}
+                    </a>
+                  </Link>
+                </td>
+                <td className="text-center">
+                  <Link href={`${node}/blockchain`}>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "blue" }}
+                    >
+                      {node}
+                    </a>
+                  </Link>
                 </td>
                 <td className="text-center">
                   {currentNodes.includes(node) ? "Online" : "-"}
