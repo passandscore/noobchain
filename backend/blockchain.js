@@ -1,9 +1,9 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
-const uuid = require("uuid/v1");
 const Transaction = require("./transaction");
 const ValidationUtils = require("./utils/ValidationUtils");
 const config = require("./utils/Config");
+const CryptoUtils = require("./utils/CryptoUtils");
 
 /**
  * @notice - Creates a new blockchain
@@ -75,16 +75,72 @@ class Blockchain {
    * @param amount - The amount of the transaction
    * @return - A transaction object
    */
-  addTransaction(sender, recipient, amount) {
-    const transactionId = uuid().split("-").join("");
-    const newTransaction = {
-      sender,
-      recipient,
-      amount,
-      transactionId,
-    };
+  addTransaction(tranData) {
+    // Validate the transaction & add it to the pending transactions
+    if (!ValidationUtils.isValidAddress(tranData.from))
+      return { errorMsg: "Invalid sender address: " + tranData.from };
+    if (!ValidationUtils.isValidAddress(tranData.to))
+      return { errorMsg: "Invalid recipient address: " + tranData.to };
+    if (!ValidationUtils.isValidPublicKey(tranData.senderPubKey))
+      return { errorMsg: "Invalid public key: " + tranData.senderPubKey };
+    let senderAddr = CryptoUtils.publicKeyToAddress(tranData.senderPubKey);
+    if (senderAddr !== tranData.from)
+      return { errorMsg: "The public key should match the sender address" };
+    // if (!ValidationUtils.isValidTransferValue(tranData.value))
+    //   return { errorMsg: "Invalid transfer value: " + tranData.value };
+    // if (!ValidationUtils.isValidFee(tranData.fee))
+    //   return { errorMsg: "Invalid transaction fee: " + tranData.fee };
+    // if (!ValidationUtils.isValidDate(tranData.dateCreated))
+    //   return { errorMsg: "Invalid date: " + tranData.dateCreated };
+    if (!ValidationUtils.isValidSignatureFormat(tranData.senderSignature))
+      return {
+        errorMsg:
+          'Invalid or missing signature. Expected signature format: ["hexnum", "hexnum"]',
+      };
 
-    return newTransaction;
+    let tran = new Transaction(
+      tranData.from,
+      tranData.to,
+      tranData.value,
+      tranData.fee,
+      tranData.dateCreated,
+      tranData.data,
+      tranData.senderPubKey,
+      undefined, // the transactionDataHash is auto-calculated
+      tranData.senderSignature
+    );
+
+    // Check for duplicated transactions (to avoid "replay attack")
+    if (this.findTransactionByDataHash(tran.transactionDataHash))
+      return {
+        errorMsg: "Duplicated transaction: " + tran.transactionDataHash,
+      };
+
+    if (!tran.verifySignature())
+      return { errorMsg: "Invalid signature: " + tranData.senderSignature };
+
+    let balances = this.getAccountBalance(tran.from);
+    if (balances.confirmedBalance < tran.value + tran.fee)
+      return {
+        errorMsg: "Unsufficient sender balance.",
+      };
+
+    this.pendingTransactions.push(tran);
+
+    return tran;
+  }
+
+  /**
+   * @notice - Checks for a duplicate transaction
+   * @param transactionDataHash - The transaction data hash
+   * @return - The matching transaction or undefined
+   */
+  findTransactionByDataHash(transactionDataHash) {
+    let allTransactions = this.getAllTransactions();
+    let matchingTransactions = allTransactions.filter(
+      (t) => t.transactionDataHash === transactionDataHash
+    );
+    return matchingTransactions[0];
   }
 
   /**

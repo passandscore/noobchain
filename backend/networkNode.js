@@ -56,26 +56,39 @@ app.post("/transaction", function (req, res) {
 
 // creates a new transaction
 app.post("/transaction/broadcast", function (req, res) {
-  const { sender, recipient, amount } = req.body;
-  const newTransaction = noobchain.addTransaction(sender, recipient, amount);
+  const newTransaction = noobchain.addTransaction(req.body);
+
+  console.log(newTransaction);
+  if (newTransaction.errorMsg) {
+    res.json({ error: newTransaction.errorMsg });
+    return;
+  }
   noobchain.addTransactionToPendingTransactions(newTransaction);
 
-  // broadcast the transaction to other nodes
-  const requestPromises = [];
-  noobchain.networkNodes.forEach((node) => {
-    const requestOptions = {
-      uri: `${node}/transaction`,
-      method: "POST",
-      body: newTransaction,
-      json: true,
-    };
+  if (newTransaction.transactionDataHash) {
+    // Added a new pending transaction --> broadcast it to all known peers
 
-    requestPromises.push(rp(requestOptions));
-  });
+    const requestPromises = [];
+    noobchain.networkNodes.forEach((node) => {
+      const requestOptions = {
+        uri: `${node}/transaction`,
+        method: "POST",
+        body: newTransaction,
+        json: true,
+      };
 
-  Promise.all(requestPromises)
-    .then(() => res.json({ message: "Transaction created and broadcasted" }))
-    .catch((err) => res.status(400).json({ error: err.message }));
+      requestPromises.push(rp(requestOptions));
+    });
+
+    Promise.all(requestPromises)
+      .then(() =>
+        res.json({
+          message: "Transaction created and broadcasted",
+          transactionDataHash: newTransaction.transactionDataHash,
+        })
+      )
+      .catch((err) => res.status(400).json({ error: err.message }));
+  } else res.status(StatusCodes.BAD_REQUEST).json(newTransaction);
 });
 
 //========================= Mining =========================
@@ -104,7 +117,7 @@ app.get("/mine", function (req, res) {
   const requestPromises = [];
   noobchain.networkNodes.forEach((node) => {
     const requestOptions = {
-      uri: `${node}/receive-new-block`,
+      uri: `$http://localhost:3001/receive-new-block`,
       method: "POST",
       body: { newBlock },
       json: true,
@@ -170,8 +183,9 @@ app.post("/register-and-broadcast-node", function (req, res) {
   const newNodeUrl = req.body.newNodeUrl;
 
   // Step 1)
-  if (noobchain.networkNodes.indexOf(newNodeUrl) == -1)
+  if (noobchain.networkNodes.indexOf(newNodeUrl) == -1) {
     noobchain.networkNodes.push(newNodeUrl);
+  }
 
   // Step 2)
   const regNodesPromises = [];
@@ -234,6 +248,49 @@ app.post("/register-nodes-bulk", function (req, res) {
   });
   res.json({
     message: "Bulk registration successful",
+  });
+});
+
+app.post("/unregister-and-broadcast-node", function (req, res) {
+  const oldNodeURL = req.body.oldNodeURL;
+
+  // Step 1)
+  if (noobchain.networkNodes.includes(oldNodeURL)) {
+    noobchain.networkNodes = noobchain.networkNodes.filter(
+      (node) => node !== oldNodeURL
+    );
+  }
+
+  // Step 2)
+  const removeNodePromise = [];
+  noobchain.networkNodes.forEach((networkNodesUrl) => {
+    const requestOptions = {
+      uri: networkNodesUrl + "/unregister-node",
+      method: "POST",
+      body: { oldNodeURL: oldNodeURL },
+      json: true,
+    };
+
+    removeNodePromise.push(rp(requestOptions));
+  });
+
+  // Step 3)
+  Promise.all(removeNodePromise)
+    .then(() => {
+      res.json({
+        message: "Node removed from network successfully",
+      });
+    })
+    .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+app.post("/unregister-node", function (req, res) {
+  const oldNodeURL = req.body.oldNodeURL;
+  noobchain.networkNodes = noobchain.networkNodes.filter(
+    (node) => node !== oldNodeURL
+  );
+  res.json({
+    message: "Node removed successfully",
   });
 });
 

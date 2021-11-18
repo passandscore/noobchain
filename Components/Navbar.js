@@ -37,6 +37,12 @@ const Navbar = () => {
                   Wallet
                 </a>
               </Link>
+              <Link href="/miner">
+                <a className="nav-link fs-5">Miner</a>
+              </Link>
+              <Link href="/nodes">
+                <a className="nav-link fs-5">Nodes</a>
+              </Link>
               <Link href="http://localhost:3001/blockchain">
                 <a
                   className="nav-link fs-5"

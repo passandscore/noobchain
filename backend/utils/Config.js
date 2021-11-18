@@ -3,7 +3,7 @@ const Transaction = require("../Transaction");
 const CryptoUtils = require("./CryptoUtils");
 
 const faucetPrivateKey =
-  "8c0fa63eec906b808506271a6144eab11397a3674134b79c2c7146fd160f3018";
+  "4a366156897c6145721bb2803fa42d97f1d2e974b5f8cc27e99b530ac20bba3";
 const faucetPublicKey = CryptoUtils.privateKeyToPublicKey(faucetPrivateKey);
 const faucetAddress = CryptoUtils.publicKeyToAddress(faucetPublicKey);
 console.log("faucetAddress", faucetAddress);

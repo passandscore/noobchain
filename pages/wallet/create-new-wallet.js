@@ -1,7 +1,6 @@
 import Head from "next/head";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
-// import hashes from "../../lib/hashes";
 import elliptic from "../../lib/elliptic";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
@@ -14,7 +13,7 @@ export default function CreateNewWallet() {
   const [walletStatus, setWalletStatus] = useRecoilState(lockState);
 
   const secp256k1 = new elliptic.ec("secp256k1");
-  const textAreaRef = useRef(null);
+  const textAreaRef = useRef("");
 
   const handleClick = () => {
     let keyPair = secp256k1.genKeyPair();

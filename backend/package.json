@@ -12,6 +12,7 @@
     "node_5": "nodemon --watch dev -e js backend/networkNode.js 3005 http://localhost:3005"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "elliptic": "^6.5.4",

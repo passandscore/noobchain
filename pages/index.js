@@ -7,7 +7,7 @@ export default function Wallet() {
   return (
     <>
       <Head>
-        <title>NOOB | Wallet</title>
+        <title>Noobchain</title>
       </Head>
 
       <div

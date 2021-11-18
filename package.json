@@ -7,8 +7,12 @@
     "start": "next start",
     "lint": "next lint",
     "blockchain": "nodemon --watch dev -e js backend/networkNode.js 3001 http://localhost:3001",
+    "node_2": "nodemon --watch dev -e js backend/networkNode.js 3002 http://localhost:3002",
+    "node_3": "nodemon --watch dev -e js backend/networkNode.js 3003 http://localhost:3003",
+    "node_4": "nodemon --watch dev -e js backend/networkNode.js 3004 http://localhost:3004",
+    "node_5": "nodemon --watch dev -e js backend/networkNode.js 3005 http://localhost:3005",
     "client": "npm run dev",
-    "noobchain": "concurrently \"npm run blockchain\" \"npm run client\""
+    "noobchain": "concurrently \"npm run blockchain\" \"npm run client\" \"npm run node_2\" \"npm run node_3\" \"npm run node_4\" \"npm run node_5\""
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -20,7 +24,8 @@
     "react-bootstrap": "^2.0.2",
     "react-dom": "17.0.2",
     "react-toastify": "^8.1.0",
-    "recoil": "^0.5.2"
+    "recoil": "^0.5.2",
+    "terminal-in-react": "^4.3.1"
   },
   "devDependencies": {
     "eslint": "7",

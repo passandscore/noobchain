@@ -1,13 +1,37 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Wallet.module.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Wallet() {
+  const [balance, setBalance] = useState(0);
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    async function getBalance() {
+      let [balances] = await Promise.all([
+        axios.get(`http://localhost:3001/address/0e5092f2dbcf00995b1aae95bc7ec8a1b6596fb8
+/balance`),
+      ]);
+
+      const { confirmedBalance } = balances.data;
+      setBalance(confirmedBalance);
+    }
+
+    getBalance();
+  }, []);
+
+  const handleClick = () => {
+    console.log("clicked");
+  };
+
   return (
     <>
       <Head>
         <title>NOOB | Faucet</title>
       </Head>
+
+      <h3>{balance}</h3>
       <div
         className={styles.background}
         style={{ display: "flex", justifyContent: "center" }}
@@ -58,40 +82,46 @@ export default function Wallet() {
                     id="buttonGenerateNewWallet"
                     value="Generate Now"
                     className="btn btn-primary btn-lg mt-3 w-100"
+                    onClick={handleClick}
                   >
                     Submit
                   </button>
                 </div>
-                {/* Results */}
-                <div className="text-center">
-                  <p className="fs-5 m-0">
-                    We sent{" "}
-                    <span className="fs-3 text-success">0.34343434</span> coins
-                    to address
-                  </p>
 
-                  <p className="fs-5 m-0">
-                    <a href="#" style={{ textDecoration: "none" }}>
-                      0xdfsdfsfsdfsdflkjsflsd8fe3h98r32hr9832
-                    </a>
-                  </p>
-                  <p className="fs-5">
-                    tx:{" "}
-                    <a
-                      style={{ fontSize: "16px", textDecoration: "none" }}
-                      href="#"
-                    >
-                      90093840934803j4lk34jh389hjr03u434u3
-                    </a>
-                  </p>
-                  <button
-                    type="button"
-                    id="buttonGenerateNewWallet"
-                    className="btn btn-primary btn-lg  w-100"
-                  >
-                    Back
-                  </button>
-                </div>
+                {showDetails && (
+                  <>
+                    {/* Results */}
+                    <div className="text-center">
+                      <p className="fs-5 m-0">
+                        We sent{" "}
+                        <span className="fs-3 text-success">0.34343434</span>{" "}
+                        coins to address
+                      </p>
+
+                      <p className="fs-5 m-0">
+                        <a href="#" style={{ textDecoration: "none" }}>
+                          0xdfsdfsfsdfsdflkjsflsd8fe3h98r32hr9832
+                        </a>
+                      </p>
+                      <p className="fs-5">
+                        tx:{" "}
+                        <a
+                          style={{ fontSize: "16px", textDecoration: "none" }}
+                          href="#"
+                        >
+                          90093840934803j4lk34jh389hjr03u434u3
+                        </a>
+                      </p>
+                      <button
+                        type="button"
+                        id="buttonGenerateNewWallet"
+                        className="btn btn-primary btn-lg  w-100"
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -100,3 +130,24 @@ export default function Wallet() {
     </>
   );
 }
+
+// // This function gets called at build time
+// export async function getStaticProps() {
+//   // Return faucet balance from blockchain
+//   let [balances] = await Promise.all([
+//     axios.get(
+//       "http://localhost/address/0e5092f2dbcf00995b1aae95bc7ec8a1b6596fb8/balance"
+//     ),
+//     // axios.get(`${nodeUrl}/address/${userAddress}/balance`),
+//   ]);
+
+//   // By returning { props: { posts } }, the Blog component
+//   // will receive `posts` as a prop at build time
+//   return {
+//     props: {
+//       balances,
+//     },
+//   };
+// }
+
+// export default Wallet;
