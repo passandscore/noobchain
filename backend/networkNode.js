@@ -90,7 +90,7 @@ app.post("/transaction/broadcast", function (req, res) {
     res.json({ error: newTransaction.errorMsg });
     return;
   }
-  noobchain.addTransactionToPendingTransactions(newTransaction);
+  // noobchain.addTransactionToPendingTransactions(newTransaction);
 
   if (newTransaction.transactionDataHash) {
     // Added a new pending transaction --> broadcast it to all known peers
@@ -120,26 +120,90 @@ app.post("/transaction/broadcast", function (req, res) {
 
 //========================= Mining =========================
 
-app.get("/mine", function (req, res) {
-  const lastBlock = noobchain.getLastBlock();
-  const previousBlockHash = lastBlock.hash;
-  const currentBlockData = {
-    transactions: noobchain.pendingTransactions,
-    index: lastBlock.index + 1,
-  };
-  const nonce = noobchain.proofOfWork(
-    previousBlockHash,
-    currentBlockData,
-    noobchain.difficulty
-  );
+// app.get("/mine", function (req, res) {
+//   const lastBlock = noobchain.getLastBlock();
+//   const previousBlockHash = lastBlock.hash;
+//   const currentBlockData = {
+//     transactions: noobchain.pendingTransactions,
+//     index: lastBlock.index + 1,
+//   };
+//   const nonce = noobchain.proofOfWork(
+//     previousBlockHash,
+//     currentBlockData,
+//     noobchain.difficulty
+//   );
 
-  const blockHash = noobchain.hashBlock(
-    previousBlockHash,
-    currentBlockData,
-    nonce
-  );
+//   const blockHash = noobchain.hashBlock(
+//     previousBlockHash,
+//     currentBlockData,
+//     nonce
+//   );
 
-  const newBlock = noobchain.addBlock(nonce, previousBlockHash, blockHash);
+//   const newBlock = noobchain.addBlock(nonce, previousBlockHash, blockHash);
+//   // broadcast the new block to other nodes
+//   const requestPromises = [];
+//   noobchain.networkNodes.forEach((node) => {
+//     const requestOptions = {
+//       uri: `${node}/receive-new-block`,
+//       method: "POST",
+//       body: { newBlock },
+//       json: true,
+//     };
+
+//     requestPromises.push(rp(requestOptions));
+//   });
+
+//   Promise.all(requestPromises)
+//     .then(() => {
+//       // Broadcast miner reward transaction to all nodes
+//       const requestOptions = {
+//         uri: `${noobchain.currentNodeUrl}/transaction/broadcast`,
+//         method: "POST",
+//         body: {
+//           sender: "00",
+//           recipient: nodeAddress,
+//           amount: noobchain.minerReward,
+//         },
+//         json: true,
+//       };
+
+//       return rp(requestOptions);
+//     })
+//     .then(() =>
+//       res.json({
+//         message: "New block mined and broadcasted successfully",
+//         block: newBlock,
+//       })
+//     )
+//     .catch((err) => res.status(400).json({ error: err.message }));
+// });
+
+// app.post("/receive-new-block", function (req, res) {
+//   const newBlock = req.body.newBlock;
+//   const lastBlock = noobchain.getLastBlock();
+//   const correctHash = lastBlock.hash === newBlock.previousBlockHash;
+//   const correctIndex = lastBlock.index + 1 === newBlock.index;
+
+//   if (correctHash && correctIndex) {
+//     noobchain.chain.push(newBlock);
+//     noobchain.pendingTransactions = [];
+//     res.json({
+//       message: "New block received and accepted",
+//       newBlock,
+//     });
+//   } else {
+//     res.json({
+//       message: "New block rejected",
+//       newBlock,
+//     });
+//   }
+// });
+
+//========================= Mining =========================
+app.post("/mine-next-block", function (req, res) {
+  const { minerAddress, difficulty } = req.body;
+  const newBlock = noobchain.mineNextBlock(minerAddress, difficulty);
+
   // broadcast the new block to other nodes
   const requestPromises = [];
   noobchain.networkNodes.forEach((node) => {
@@ -155,48 +219,20 @@ app.get("/mine", function (req, res) {
 
   Promise.all(requestPromises)
     .then(() => {
-      // Broadcast miner reward transaction to all nodes
-      const requestOptions = {
-        uri: `${noobchain.currentNodeUrl}/transaction/broadcast`,
-        method: "POST",
-        body: {
-          sender: "00",
-          recipient: nodeAddress,
-          amount: noobchain.minerReward,
-        },
-        json: true,
-      };
-
-      return rp(requestOptions);
-    })
-    .then(() =>
+      //update local node
+      noobchain.chain.push(newBlock);
+      noobchain.miningJobs = {};
+      noobchain.removePendingTransactions(newBlock.transactions);
       res.json({
         message: "New block mined and broadcasted successfully",
         block: newBlock,
-      })
-    )
+      });
+    })
     .catch((err) => res.status(400).json({ error: err.message }));
 });
 
 app.post("/receive-new-block", function (req, res) {
-  const newBlock = req.body.newBlock;
-  const lastBlock = noobchain.getLastBlock();
-  const correctHash = lastBlock.hash === newBlock.previousBlockHash;
-  const correctIndex = lastBlock.index + 1 === newBlock.index;
-
-  if (correctHash && correctIndex) {
-    noobchain.chain.push(newBlock);
-    noobchain.pendingTransactions = [];
-    res.json({
-      message: "New block received and accepted",
-      newBlock,
-    });
-  } else {
-    res.json({
-      message: "New block rejected",
-      newBlock,
-    });
-  }
+  noobchain.extendChain(req.body.newBlock);
 });
 
 /**  ========================= Register Nodes =========================

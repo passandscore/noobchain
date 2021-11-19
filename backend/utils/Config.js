@@ -54,7 +54,7 @@ module.exports = {
   startDifficulty: 5,
   minTransactionFee: 10,
   maxTransactionFee: 1000000,
-  blockReward: 5000000,
+  blockReward: 50000,
   maxTransferValue: 10000000000000,
   safeConfirmCount: 3,
   genesisBlock,

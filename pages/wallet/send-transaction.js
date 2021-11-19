@@ -20,11 +20,11 @@ export default function SendTransaction() {
   const [signedTx, setSignedTx] = useState(null);
   const [txHash, setTxHash] = useState("");
   const [successTx, setSuccessTx] = useState(false);
+  const [fee, setFee] = useState(20);
 
   const walletStatus = useRecoilValue(lockState);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const feeRef = useRef("");
   const signRef = useRef("");
 
   const handleClick = () => {
@@ -65,7 +65,7 @@ export default function SendTransaction() {
       from: sessionStorage["address"],
       to: recipient,
       value,
-      fee: feeRef.current.value,
+      fee,
       dateCreated: new Date().toISOString(),
       data,
       senderPubKey: sessionStorage["pubKey"],
@@ -219,8 +219,7 @@ export default function SendTransaction() {
                 id="basic-url"
                 aria-describedby="basic-addon3"
                 readOnly
-                value="20"
-                ref={feeRef}
+                value={fee}
               />
             </div>
             <div className="input-group">

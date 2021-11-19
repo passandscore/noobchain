@@ -5,14 +5,16 @@ import styles from "../styles/Wallet.module.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { miningMode, address } from "../recoil/atoms";
+import { miningMode, address, miningDifficulty } from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, ButtonGroup, ToggleButton } from "react-bootstrap";
 
 export default function Miner() {
   const [mode, setMode] = useRecoilState(miningMode);
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useRecoilState(miningDifficulty);
   const walletAddress = useRecoilValue(address);
 
   const [autoDetails, setAutoDetails] = useState(true);
@@ -20,6 +22,8 @@ export default function Miner() {
   const [nodeInfo, setNodeInfo] = useState([]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [checked, setChecked] = useState(false);
+  const [radioValue, setRadioValue] = useState(selectedDifficulty);
   const [allNodes, setAllNodes] = useState([
     { url: "http://localhost:3001", isMining: false },
     { url: "http://localhost:3002", isMining: false },
@@ -27,6 +31,22 @@ export default function Miner() {
     { url: "http://localhost:3004", isMining: false },
     { url: "http://localhost:3005", isMining: false },
   ]);
+  const miningDifficultyRange = [
+    { name: "1", value: "1" },
+    { name: "2", value: "2" },
+    { name: "3", value: "3" },
+    { name: "4", value: "4" },
+    { name: "5", value: "5" },
+    { name: "6", value: "6" },
+    { name: "7", value: "7" },
+    { name: "8", value: "8" },
+    { name: "9", value: "9" },
+    { name: "10", value: "10" },
+  ];
+
+  useEffect(() => {
+    setRadioValue(selectedDifficulty);
+  }, []);
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
@@ -65,7 +85,27 @@ export default function Miner() {
 
     setAllNodes(updateNodeList);
 
-    const miningResult = await axios.get(`${nodeToMine}/mine`);
+    // Send the request to the node to start mining
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const body = {
+      minerAddress: walletAddress,
+      difficulty: selectedDifficulty,
+    };
+
+    const miningResult = await axios.post(
+      `${nodeToMine}/mine-next-block`,
+      body,
+      config
+    );
+
+    console.log(miningResult.data);
+
+    // const miningResult = await axios.get(`${nodeToMine}/mine-next-block`);
 
     if (miningResult) {
       // Apply extra time to give a better impression of mining
@@ -140,7 +180,10 @@ export default function Miner() {
 
       <div
         className={styles.background}
-        style={{ display: "flex", justifyContent: "center" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}
       ></div>
 
       {/* Title */}
@@ -168,7 +211,7 @@ export default function Miner() {
       </div>
 
       {/* Mining Modes */}
-      <div className="container mb-5 d-flex justify-content-center">
+      <div className="container mb-4 d-flex justify-content-center">
         <div className="btn-group" role="group" aria-label="Basic example">
           <button
             type="button"
@@ -198,10 +241,39 @@ export default function Miner() {
         </div>
       </div>
 
+      {/* Set Mining Difficulty */}
+      <div className="container mb-4 d-flex flex-column justify-content-center">
+        <ButtonGroup>
+          {miningDifficultyRange.map((radio, idx) => (
+            <ToggleButton
+              key={idx}
+              id={`radio-${idx}`}
+              type="radio"
+              variant={radio.value ? "outline-primary" : "outline-danger"}
+              name="radio"
+              value={radio.value}
+              checked={radioValue === radio.value}
+              onChange={(e) => {
+                setRadioValue(e.currentTarget.value);
+                setSelectedDifficulty(e.currentTarget.value);
+              }}
+            >
+              {radio.name}
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
+        <p>
+          <strong>Select Mining Difficulty:</strong> Represents the number of
+          prefixed zeros (ex: 00000) that be present to make the hash valid. A
+          higher difficulty level requires more computing power to verify
+          transactions and mine new coins.{" "}
+        </p>
+      </div>
+
       {/* Manual Mode */}
       {mode === "manual" ? (
         <>
-          <div className="container w-75 d-flex justify-content-center">
+          <div className="container w-75 d-flex justify-content-center pb-5">
             <table className="table" style={{ maxWidth: "60rem" }}>
               <thead>
                 <tr>
@@ -323,7 +395,10 @@ export default function Miner() {
 
         <>
           <div className="container w-75 d-flex justify-content-center">
-            <table className="table" style={{ maxWidth: "60rem" }}>
+            <table
+              className="table"
+              style={{ maxWidth: "60rem", paddingBottom: "2rem" }}
+            >
               <thead>
                 <tr>
                   <th scope="col" className="text-center">

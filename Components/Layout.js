@@ -6,9 +6,18 @@ import Footer from "./Footer";
 const Layout = ({ children }) => {
   return (
     <>
-      <Navbar />
+      <div
+        style={{
+          overflow: "hidden",
+          display: "block",
+          position: "relative",
+          paddingBottom: "100px" /* height of your footer */,
+        }}
+      >
+        <Navbar />
 
-      <div>{children}</div>
+        <div>{children}</div>
+      </div>
       <Footer />
     </>
   );

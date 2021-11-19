@@ -24,3 +24,8 @@ export const miningMode = atom({
   key: "miningMode",
   default: "automatic",
 });
+
+export const miningDifficulty = atom({
+  key: "miningDifficulty",
+  default: "5",
+});

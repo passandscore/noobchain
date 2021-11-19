@@ -1,6 +1,7 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
 const Transaction = require("./transaction");
+const Block = require("./block");
 const ValidationUtils = require("./utils/ValidationUtils");
 const config = require("./utils/Config");
 const CryptoUtils = require("./utils/CryptoUtils");
@@ -16,11 +17,11 @@ class Blockchain {
   constructor() {
     this.chain = [config.genesisBlock];
     this.pendingTransactions = [];
-    this.difficulty = "0000";
-    this.minerReward = 12.5;
-
+    this.difficulty = config.startDifficulty;
+    this.minerReward = 5000000;
     this.currentNodeUrl = currentNodeUrl;
     this.networkNodes = [];
+    this.miningJobs = {}; // map(blockDataHash => Block)
   }
 
   /**
@@ -289,7 +290,7 @@ class Blockchain {
     let transactions = [];
     for (let block of this.chain) {
       transactions.push.apply(transactions, block.transactions);
-      transactions.push(...block.transactions);
+      // transactions.push(...block.transactions);
     }
     return transactions;
   }
@@ -330,7 +331,7 @@ class Blockchain {
       safeCount: config.safeConfirmCount,
     };
     for (let tran of transactions) {
-      // Determine the number of blocks mined since the transaction was created
+      // Determine the number of chain mined since the transaction was created
 
       let confimationCount = 0;
       if (typeof tran.minedInBlockIndex === "number") {
@@ -340,30 +341,32 @@ class Blockchain {
       // Calculate the address balance
       if (tran.from === address) {
         // Funds spent -> subtract value and fee
-        balance.pendingBalance -= tran.fee;
-        if (confimationCount === 0 || tran.transferSuccessful)
-          balance.pendingBalance -= tran.value;
+        if (!tran.transferSuccessful)
+          balance.pendingBalance -= Number(tran.fee);
+        balance.pendingBalance -= Number(tran.value);
         if (confimationCount >= 1) {
-          balance.confirmedBalance -= tran.fee;
-          if (tran.transferSuccessful) balance.confirmedBalance -= tran.value;
+          balance.confirmedBalance -= Number(tran.fee);
+          if (tran.transferSuccessful)
+            balance.confirmedBalance -= Number(tran.value);
         }
         if (confimationCount >= config.safeConfirmCount) {
-          balance.safeBalance -= tran.fee;
-          if (tran.transferSuccessful) balance.safeBalance -= tran.value;
+          balance.safeBalance -= Number(tran.fee);
+          if (tran.transferSuccessful)
+            balance.safeBalance -= Number(tran.value);
         }
       }
       if (tran.to === address) {
         console.log(tran.to);
         // Funds received --> add value and fee
-        if (confimationCount === 0 || tran.transferSuccessful)
-          balance.pendingBalance += tran.value;
+        if (!tran.transferSuccessful)
+          balance.pendingBalance += Number(tran.value);
         if (confimationCount >= 1 && tran.transferSuccessful)
-          balance.confirmedBalance += tran.value;
+          balance.confirmedBalance += Number(tran.value);
         if (
           confimationCount >= config.safeConfirmCount &&
           tran.transferSuccessful
         )
-          balance.safeBalance += tran.value;
+          balance.safeBalance += Number(tran.value);
       }
     }
 
@@ -403,6 +406,204 @@ class Blockchain {
       transactions: addressTransactions,
       addressBalance: balance,
     };
+  }
+
+  /**
+   * @notice - Calculates the total balance of all pending transaction addresses in the blockchain
+   * @return - An object containing the total balance of all pending transaction addresses
+   */
+  calcAllConfirmedBalances() {
+    let transactions = this.getConfirmedTransactions();
+    let balances = {};
+    for (let tran of transactions) {
+      balances[tran.from] = balances[tran.from] || 0;
+      balances[tran.to] = balances[tran.to] || 0;
+      balances[tran.from] -= tran.fee;
+      if (tran.transferSuccessful) {
+        balances[tran.from] -= tran.value;
+        balances[tran.to] += tran.value;
+      }
+    }
+    return balances;
+  }
+
+  /**
+   * @notice - Updates the chain to match the longest chain
+   * @param transactionsToRemove - Transactions to remove from the pending transactions
+   */
+  removePendingTransactions(transactionsToRemove) {
+    let tranHashesToRemove = new Set();
+    for (let t of transactionsToRemove)
+      tranHashesToRemove.add(t.transactionDataHash);
+    this.pendingTransactions = this.pendingTransactions.filter(
+      (t) => !tranHashesToRemove.has(t.transactionDataHash)
+    );
+  }
+
+  /**
+   * @notice - Manual Mode - Mines the next block candidate
+   * @param minerAddress - Address of the miner
+   * @param difficulty - The difficulty of the last block
+   */
+  mineNextBlock(minerAddress, difficulty) {
+    // Prepare the next block for mining
+    let oldDifficulty = this.currentDifficulty;
+    this.currentDifficulty = difficulty;
+    let nextBlock = this.getMiningJob(minerAddress);
+    this.currentDifficulty = oldDifficulty;
+
+    // Mine the next block
+    nextBlock.dateCreated = new Date().toISOString();
+    nextBlock.nonce = 0;
+    do {
+      nextBlock.nonce++;
+      nextBlock.calculateBlockHash();
+    } while (
+      !ValidationUtils.isValidDifficulty(nextBlock.blockHash, difficulty)
+    );
+
+    // Submit the mined block
+    let newBlock = this.submitMinedBlock(
+      nextBlock.blockDataHash,
+      nextBlock.dateCreated,
+      nextBlock.nonce,
+      nextBlock.blockHash
+    );
+    return newBlock;
+  }
+
+  /**
+   * @notice - Prepares the miner for mining
+   * @param minerAddress - Address of the miner
+   */
+  getMiningJob(minerAddress) {
+    let nextBlockIndex = this.chain.length;
+
+    // Deep clone all pending transactions & sort them by fee
+    let transactions = JSON.parse(JSON.stringify(this.pendingTransactions));
+    transactions.sort((a, b) => b.fee - a.fee); // sort descending by fee
+
+    // Prepare the coinbase transaction -> it will collect all tx fees
+    let coinbaseTransaction = new Transaction(
+      config.nullAddress, // from (address)
+      minerAddress, // to (address)
+      config.blockReward, // value (of transfer)
+      0, // fee (for mining)
+      new Date().toISOString(), // dateCreated
+      "coinbase tx", // data (payload / comments)
+      config.nullPubKey, // senderPubKey
+      undefined, // transactionDataHash
+      config.nullSignature, // senderSignature
+      nextBlockIndex, // minedInBlockIndex
+      true
+    );
+
+    // Execute all pending transactions (after paying their fees)
+    // Transfer the requested values if the balance is sufficient
+    let balances = this.calcAllConfirmedBalances();
+    for (let tran of transactions) {
+      balances[tran.from] = balances[tran.from] || 0;
+      balances[tran.to] = balances[tran.to] || 0;
+      if (balances[tran.from] >= tran.fee) {
+        tran.minedInBlockIndex = nextBlockIndex;
+
+        // The transaction sender pays the processing fee
+        balances[tran.from] -= tran.fee;
+        coinbaseTransaction.value += tran.fee;
+
+        // Transfer the requested value: sender -> recipient
+        if (balances[tran.from] >= tran.value) {
+          balances[tran.from] -= tran.value;
+          balances[tran.to] += tran.value;
+          tran.transferSuccessful = true;
+        } else {
+          tran.transferSuccessful = false;
+        }
+      } else {
+        // The transaction cannot be mined due to insufficient
+        // balance to pay the transaction fee -> drop it
+        this.removePendingTransactions([tran]);
+        transactions = transactions.filter((t) => t !== tran);
+      }
+    }
+
+    // Insert the coinbase transaction, holding the block reward + tx fees
+    coinbaseTransaction.calculateDataHash();
+    transactions.unshift(coinbaseTransaction);
+
+    // Prepare the next block candidate (block template)
+    let prevBlockHash = this.chain[this.chain.length - 1].blockHash;
+    let nextBlockCandidate = new Block(
+      nextBlockIndex,
+      transactions,
+      this.currentDifficulty,
+      prevBlockHash,
+      minerAddress
+    );
+
+    this.miningJobs[nextBlockCandidate.blockDataHash] = nextBlockCandidate;
+    return nextBlockCandidate;
+  }
+
+  /**
+   * @notice - Constructs a new candidate block from the given block template
+   * @param blockDataHash - The block data hash
+   * @param dateCreated - The date the block was created
+   * @param nonce - The nonce of the block
+   * @return - The new candidate block
+   */
+  submitMinedBlock(blockDataHash, dateCreated, nonce, blockHash) {
+    // Find the block candidate by its data hash
+    let newBlock = this.miningJobs[blockDataHash];
+    if (newBlock === undefined)
+      return { errorMsg: "Block not found or already mined" };
+
+    // Build the new block
+    newBlock.dateCreated = dateCreated;
+    newBlock.nonce = nonce;
+    newBlock.calculateBlockHash();
+
+    // Validate the block hash + the proof of work
+    if (newBlock.blockHash !== blockHash)
+      return { errorMsg: "Block hash is incorrectly calculated" };
+    if (
+      !ValidationUtils.isValidDifficulty(
+        newBlock.blockHash,
+        newBlock.difficulty
+      )
+    )
+      return {
+        errorMsg:
+          "The calculated block hash does not match the block difficulty",
+      };
+
+    // newBlock = this.extendChain(newBlock);
+
+    // if (!newBlock.errorMsg)
+    // logger.debug("Mined a new block: " + JSON.stringify(newBlock));
+    return newBlock;
+  }
+
+  /**
+   * @notice - Extends the chain if the new block is valid
+   * @param newBlock - The new block candidate
+   * @return - The new candidate block
+   */
+  extendChain(newBlock) {
+    if (newBlock.index !== this.chain.length)
+      return {
+        errorMsg: "The submitted block was already mined by someone else",
+      };
+
+    let prevBlock = this.chain[this.chain.length - 1];
+    if (prevBlock.blockHash !== newBlock.prevBlockHash)
+      return { errorMsg: "Incorrect prevBlockHash" };
+
+    // The block is correct --> accept it
+    this.chain.push(newBlock);
+    this.miningJobs = {}; // Invalidate all mining jobs
+    this.removePendingTransactions(newBlock.transactions);
+    return newBlock;
   }
 }
 

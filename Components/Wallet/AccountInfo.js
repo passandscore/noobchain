@@ -17,7 +17,7 @@ const AccountInfo = () => {
   return (
     <div
       style={{
-        position: "absolute",
+        position: "fixed",
         bottom: "1rem",
         left: "1rem",
         zIndex: "4",
