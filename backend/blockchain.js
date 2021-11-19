@@ -577,10 +577,9 @@ class Blockchain {
           "The calculated block hash does not match the block difficulty",
       };
 
-    // newBlock = this.extendChain(newBlock);
+    //update local node
+    newBlock = this.extendChain(newBlock);
 
-    // if (!newBlock.errorMsg)
-    // logger.debug("Mined a new block: " + JSON.stringify(newBlock));
     return newBlock;
   }
 
@@ -602,7 +601,8 @@ class Blockchain {
     // The block is correct --> accept it
     this.chain.push(newBlock);
     this.miningJobs = {}; // Invalidate all mining jobs
-    this.removePendingTransactions(newBlock.transactions);
+    // this.removePendingTransactions(newBlock.transactions);
+    this.pendingTransactions = [];
     return newBlock;
   }
 }

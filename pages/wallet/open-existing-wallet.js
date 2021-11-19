@@ -26,6 +26,14 @@ export default function OpenExistingWallet() {
       return;
     }
 
+    // if (userPrivateKey.length > 62) {
+    //   toast.error("Invalid Private Key.", {
+    //     position: "bottom-right",
+    //     theme: "colored",
+    //   });
+    //   return;
+    // }
+
     let keyPair = secp256k1.keyFromPrivate(userPrivateKey);
     saveKeysInSession(keyPair);
 
@@ -66,7 +74,7 @@ export default function OpenExistingWallet() {
           <input
             type="text"
             className=" w-100 py-1"
-            placeholder="Enter your wallet private key (compressed ECDSA key, 65 hex digits)"
+            placeholder="Enter your wallet private key (compressed ECDSA key, 256-bit integer, encoded as 64 hex digits)"
             style={{ marginRight: "10px" }}
             value={userPrivateKey}
             onChange={(e) => {

@@ -54,7 +54,6 @@ export default function Nodes() {
       //Update the status of the node on the view
       if (!currentNodes.includes(nodeUrl)) {
         console.log("Node not in array");
-        // setNodesOnline([...nodesOnline, nodeUrl]);
         setCurrentNodes([...currentNodes, nodeUrl]);
       }
     } else {

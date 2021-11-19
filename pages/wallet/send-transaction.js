@@ -15,7 +15,7 @@ export default function SendTransaction() {
   const [show, setShow] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [recipient, setRecipient] = useState("");
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(null);
   const [data, setData] = useState(null);
   const [signedTx, setSignedTx] = useState(null);
   const [txHash, setTxHash] = useState("");
@@ -199,7 +199,7 @@ export default function SendTransaction() {
                 className="form-control"
                 id="basic-url"
                 aria-describedby="basic-addon3"
-                value={value}
+                value={value && value}
                 onChange={(e) => setValue(e.target.value)}
               />
             </div>

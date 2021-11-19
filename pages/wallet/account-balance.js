@@ -28,6 +28,15 @@ export default function AccountBalances() {
       return;
     }
 
+    const isValidAddress = /^[0-9a-f]{40}$/.test(userAddress);
+    if (!isValidAddress) {
+      toast.error("Invalid address.", {
+        position: "bottom-right",
+        theme: "colored",
+      });
+      return;
+    }
+
     let [balances] = await Promise.all([
       axios.get(`${nodeUrl}/address/${userAddress}/balance`),
     ]);

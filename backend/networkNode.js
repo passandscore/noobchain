@@ -118,6 +118,11 @@ app.post("/transaction/broadcast", function (req, res) {
   } else res.status(StatusCodes.BAD_REQUEST).json(newTransaction);
 });
 
+// returns all blockchain transactions
+app.get("/all-transactions", function (req, res) {
+  res.json(noobchain.getAllTransactions());
+});
+
 //========================= Mining =========================
 
 // app.get("/mine", function (req, res) {
@@ -219,10 +224,6 @@ app.post("/mine-next-block", function (req, res) {
 
   Promise.all(requestPromises)
     .then(() => {
-      //update local node
-      noobchain.chain.push(newBlock);
-      noobchain.miningJobs = {};
-      noobchain.removePendingTransactions(newBlock.transactions);
       res.json({
         message: "New block mined and broadcasted successfully",
         block: newBlock,
@@ -232,7 +233,18 @@ app.post("/mine-next-block", function (req, res) {
 });
 
 app.post("/receive-new-block", function (req, res) {
-  noobchain.extendChain(req.body.newBlock);
+  const block = noobchain.extendChain(req.body.newBlock);
+  if (!block.errorMsg) {
+    res.json({
+      message: "New block received and accepted",
+      block,
+    });
+  } else {
+    res.json({
+      message: "New block rejected",
+      block,
+    });
+  }
 });
 
 /**  ========================= Register Nodes =========================
@@ -274,6 +286,7 @@ app.post("/register-and-broadcast-node", function (req, res) {
             ...noobchain.networkNodes,
             noobchain.currentNodeUrl,
           ],
+          pendingTransactions: noobchain.pendingTransactions,
         },
         json: true,
       };
@@ -302,6 +315,8 @@ app.post("/register-node", function (req, res) {
 
 app.post("/register-nodes-bulk", function (req, res) {
   const allNetworkNodes = req.body.allNetworkNodes;
+  const pendingTransactions = req.body.pendingTransactions;
+
   allNetworkNodes.forEach((networkNodesUrl) => {
     const nodeNotAlreadyPresent =
       noobchain.networkNodes.indexOf(networkNodesUrl) == -1;
@@ -309,6 +324,8 @@ app.post("/register-nodes-bulk", function (req, res) {
     if (nodeNotAlreadyPresent && notCurrentNode)
       noobchain.networkNodes.push(networkNodesUrl);
   });
+  // update pending transactions
+  noobchain.pendingTransactions = pendingTransactions;
   res.json({
     message: "Bulk registration successful",
   });
@@ -360,6 +377,8 @@ app.post("/unregister-node", function (req, res) {
       (node) => node !== oldNodeURL
     );
   }
+  // update pending transactions
+  noobchain.pendingTransactions = [];
   res.json({
     message: "Node removed successfully",
   });

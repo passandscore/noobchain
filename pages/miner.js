@@ -7,7 +7,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { miningMode, address, miningDifficulty } from "../recoil/atoms";
+import {
+  miningMode,
+  address,
+  miningDifficulty,
+  nodeList,
+} from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
 import { Modal, ButtonGroup, ToggleButton } from "react-bootstrap";
 
@@ -16,6 +21,7 @@ export default function Miner() {
   const [selectedDifficulty, setSelectedDifficulty] =
     useRecoilState(miningDifficulty);
   const walletAddress = useRecoilValue(address);
+  const onlineNodes = useRecoilValue(nodeList);
 
   const [autoDetails, setAutoDetails] = useState(true);
   const [show, setShow] = useState(false);
@@ -45,6 +51,7 @@ export default function Miner() {
   ];
 
   useEffect(() => {
+    console.log(onlineNodes);
     setRadioValue(selectedDifficulty);
   }, []);
 
@@ -66,6 +73,21 @@ export default function Miner() {
   };
 
   const handleManualMineClick = async (nodeToMine) => {
+    // Check if pending transactions exist
+    const allTransactions = await axios.get(`${nodeToMine}/all-transactions`);
+    const pendingTransactions = allTransactions.data.filter(
+      (transaction) => transaction.transferSuccessful !== true
+    ).length;
+
+    console.log("pending: " + pendingTransactions);
+    if (pendingTransactions === 0) {
+      toast.error("There are no pending transactions to mine.", {
+        position: "bottom-right",
+        theme: "colored",
+      });
+      return;
+    }
+
     // Ensure that user has a wallet address
     if (!walletAddress) {
       toast.error("Require your mining address. Unlock your wallet.", {
@@ -82,7 +104,6 @@ export default function Miner() {
       }
       return node;
     });
-
     setAllNodes(updateNodeList);
 
     // Send the request to the node to start mining
@@ -104,28 +125,22 @@ export default function Miner() {
     );
 
     console.log(miningResult.data);
-
-    // const miningResult = await axios.get(`${nodeToMine}/mine-next-block`);
+    const result = miningResult.data.message;
 
     if (miningResult) {
-      // Apply extra time to give a better impression of mining
-      setTimeout(() => {
-        let updateNodeList = allNodes.map((node) => {
-          if (node.url === nodeToMine) {
-            node.isMining = false;
-          }
-          return node;
-        });
-        toast.success(result, {
-          position: "bottom-right",
-          theme: "colored",
-        });
+      let updateNodeList = allNodes.map((node) => {
+        if (node.url === nodeToMine) {
+          node.isMining = false;
+        }
+        return node;
+      });
+      toast.success(result, {
+        position: "bottom-right",
+        theme: "colored",
+      });
 
-        // Update the node list
-        setAllNodes(updateNodeList);
-      }, 5000);
-
-      const result = miningResult.data.message;
+      // Update the node list
+      setAllNodes(updateNodeList);
     } else {
       toast.error("Unable to mine block.", {
         position: "bottom-right",
@@ -291,101 +306,57 @@ export default function Miner() {
               </thead>
 
               <tbody>
-                {allNodes.map((node, index) => (
-                  <tr key={index}>
-                    <td className="text-center">
-                      <Link href="">
-                        <a
-                          onClick={() => {
-                            handleClick(node.url);
-                          }}
-                        >
-                          Node {index + 1}
-                        </a>
-                      </Link>
-                    </td>
-                    <td className="text-center">
-                      <Link href={`${node.url}/blockchain`}>
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: "blue" }}
-                        >
-                          {node.url}
-                        </a>
-                      </Link>
-                    </td>
+                {allNodes.map(
+                  (node, index) =>
+                    onlineNodes.includes(node.url) && (
+                      <tr key={index}>
+                        <td className="text-center">
+                          <Link href="">
+                            <a
+                              onClick={() => {
+                                handleClick(node.url);
+                              }}
+                            >
+                              Node {index + 1}
+                            </a>
+                          </Link>
+                        </td>
+                        <td className="text-center">
+                          <Link href={`${node.url}/blockchain`}>
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "blue" }}
+                            >
+                              {node.url}
+                            </a>
+                          </Link>
+                        </td>
 
-                    <td className="justify-content-center d-flex">
-                      {!node.isMining ? (
-                        <button
-                          type="button"
-                          className="btn btn-success btn-sm px-4"
-                          value={node.url}
-                          onClick={(e) => {
-                            handleManualMineClick(e.target.value);
-                          }}
-                        >
-                          Mine
-                        </button>
-                      ) : (
-                        <Image
-                          src="/images/mining-progress.gif"
-                          alt="blocks-in-hand"
-                          width="50px"
-                          height="30px"
-                        />
-                      )}
-                    </td>
-                  </tr>
-
-                  // <tr key={index}>
-                  //   <td className="text-center">
-                  //     <Link href="">
-                  //       <a
-                  //         onClick={() => {
-                  //           handleClick(url);
-                  //         }}
-                  //       >
-                  //         Node {index + 1}
-                  //       </a>
-                  //     </Link>
-                  //   </td>
-                  //   <td className="text-center">
-                  //     <Link href={`${url}/blockchain`}>
-                  //       <a
-                  //         target="_blank"
-                  //         rel="noopener noreferrer"
-                  //         style={{ color: "blue" }}
-                  //       >
-                  //         {url}
-                  //       </a>
-                  //     </Link>
-                  //   </td>
-
-                  //   <td className="justify-content-center d-flex">
-                  //     {!isMining ? (
-                  //       <button
-                  //         type="button"
-                  //         className="btn btn-success btn-sm px-4"
-                  //         value={url}
-                  //         onClick={(e) => {
-                  //           handleManualMineClick(e.target.value);
-                  //         }}
-                  //       >
-                  //         Mine
-                  //       </button>
-                  //     ) : (
-                  //       <Image
-                  //         src="/images/mining-progress-1.gif"
-                  //         alt="blocks-in-hand"
-                  //         width="50px"
-                  //         height="30px"
-                  //       />
-                  //     )}
-                  //   </td>
-                  // </tr>
-                ))}
+                        <td className="justify-content-center d-flex">
+                          {!node.isMining ? (
+                            <button
+                              type="button"
+                              className="btn btn-success btn-sm px-4"
+                              value={node.url}
+                              onClick={(e) => {
+                                handleManualMineClick(e.target.value);
+                              }}
+                            >
+                              Mine
+                            </button>
+                          ) : (
+                            <Image
+                              src="/images/mining-progress.gif"
+                              alt="blocks-in-hand"
+                              width="50px"
+                              height="30px"
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    )
+                )}
               </tbody>
             </table>
           </div>
