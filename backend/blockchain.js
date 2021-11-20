@@ -85,8 +85,8 @@ class Blockchain {
     if (!ValidationUtils.isValidPublicKey(tranData.senderPubKey))
       return { errorMsg: "Invalid public key: " + tranData.senderPubKey };
     let senderAddr = CryptoUtils.publicKeyToAddress(tranData.senderPubKey);
-    if (senderAddr !== tranData.from)
-      return { errorMsg: "The public key should match the sender address" };
+    // if (senderAddr !== tranData.from)
+    //   return { errorMsg: "The public key should match the sender address" };
     // if (!ValidationUtils.isValidTransferValue(tranData.value))
     //   return { errorMsg: "Invalid transfer value: " + tranData.value };
     // if (!ValidationUtils.isValidFee(tranData.fee))
@@ -335,16 +335,16 @@ class Blockchain {
 
       let confimationCount = 0;
       if (typeof tran.minedInBlockIndex === "number") {
-        confimationCount = this.chain.length - tran.minedInBlockIndex + 1;
+        confimationCount = this.chain.length - tran.minedInBlockIndex;
       }
 
       // Calculate the address balance
       if (tran.from === address) {
-        // Funds spent -> subtract value and fee
+        // Funds spent -> subtract value and fee (FROM)
         if (!tran.transferSuccessful)
           balance.pendingBalance -= Number(tran.fee);
         balance.pendingBalance -= Number(tran.value);
-        if (confimationCount >= 1) {
+        if (confimationCount > 0) {
           balance.confirmedBalance -= Number(tran.fee);
           if (tran.transferSuccessful)
             balance.confirmedBalance -= Number(tran.value);
@@ -356,11 +356,10 @@ class Blockchain {
         }
       }
       if (tran.to === address) {
-        console.log(tran.to);
-        // Funds received --> add value and fee
+        // Funds received --> add value and fee (TO)
         if (!tran.transferSuccessful)
           balance.pendingBalance += Number(tran.value);
-        if (confimationCount >= 1 && tran.transferSuccessful)
+        if (confimationCount > 0)
           balance.confirmedBalance += Number(tran.value);
         if (
           confimationCount >= config.safeConfirmCount &&

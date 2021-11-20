@@ -5,6 +5,7 @@ const port = process.argv[2];
 const rp = require("request-promise");
 const cors = require("cors");
 const { StatusCodes } = require("http-status-codes");
+const { json } = require("express");
 
 const nodeAddress = uuid().split("-").join("");
 
@@ -84,7 +85,6 @@ app.post("/transaction", function (req, res) {
 // creates a new transaction
 app.post("/transaction/broadcast", function (req, res) {
   const newTransaction = noobchain.addTransaction(req.body);
-
   console.log(newTransaction);
   if (newTransaction.errorMsg) {
     res.json({ error: newTransaction.errorMsg });

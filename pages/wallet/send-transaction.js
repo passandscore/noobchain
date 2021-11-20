@@ -1,10 +1,10 @@
 import Head from "next/head";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import { Modal, Button } from "react-bootstrap";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilValue } from "recoil";
-import { lockState } from "../../recoil/atoms";
+import { lockState, faucetDetails } from "../../recoil/atoms";
 import hashes from "../../lib/hashes";
 import elliptic from "../../lib/elliptic";
 import { ToastContainer, toast } from "react-toastify";
@@ -21,16 +21,32 @@ export default function SendTransaction() {
   const [txHash, setTxHash] = useState("");
   const [successTx, setSuccessTx] = useState(false);
   const [fee, setFee] = useState(20);
+  const [donate, setDonate] = useState(false);
 
   const walletStatus = useRecoilValue(lockState);
+  const _faucetDetails = useRecoilValue(faucetDetails);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const signRef = useRef("");
+
+  useEffect(() => {
+    const donate = sessionStorage.getItem("donate");
+    if (donate === "true") {
+      setDonate(true);
+      setRecipient(_faucetDetails.address);
+      setShow(true);
+    }
+  }, []);
 
   const handleClick = () => {
     handleShow();
     setSuccessTx(false);
     if (successTx) signRef.current.value = "";
+
+    //Remove faucet address from local storage if it exists
+    if (recipient === _faucetDetails.address) {
+      sessionStorage.removeItem("donate");
+    }
   };
 
   const signTransaction = () => {
@@ -104,6 +120,7 @@ export default function SendTransaction() {
         },
       };
 
+      console.log(signedTx);
       const result = await axios.post(
         `${nodeUrl}/transaction/broadcast`,
         signedTx,
@@ -124,6 +141,11 @@ export default function SendTransaction() {
           theme: "colored",
         });
 
+        //Remove faucet address from local storage if it exists
+        if (recipient === _faucetDetails.address) {
+          sessionStorage.removeItem("donate");
+        }
+
         //Reset state
         setRecipient("");
         setValue("");
@@ -141,6 +163,17 @@ export default function SendTransaction() {
         theme: "colored",
       });
     }
+  };
+
+  const cancelDonate = () => {
+    sessionStorage.removeItem("donate");
+    setDonate(false);
+    setRecipient("");
+    setValue("");
+    setData("");
+    setSignedTx(null);
+    setIsSigned(false);
+    signRef.current.value = "";
   };
 
   return (
@@ -229,8 +262,8 @@ export default function SendTransaction() {
                   style={{
                     paddingLeft: "27px",
                     paddingRight: "27px",
-                    paddingBottom: "20px",
-                    paddingTop: "20px",
+                    paddingBottom: "27px",
+                    paddingTop: "27px",
                   }}
                 >
                   Data
@@ -245,6 +278,11 @@ export default function SendTransaction() {
             </div>
           </Modal.Body>
           <Modal.Footer>
+            {donate && (
+              <Button variant="outline-danger" onClick={cancelDonate}>
+                Cancel Donate
+              </Button>
+            )}
             <Button variant="btn btn-outline-primary" onClick={signTransaction}>
               Sign Transaction
             </Button>

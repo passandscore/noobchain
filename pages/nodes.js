@@ -176,7 +176,9 @@ export default function Nodes() {
             of a decentralized ledger to store, share, and verify information.
           </p>
           <hr className="my-4" />
-          <p>Select your default node to be used for all transactions.</p>
+          <p className="lead">
+            Select your default node to be used for all transactions.
+          </p>
           {/* Select Node Url */}
           <div className="input-group mb-3 p-2">
             <div className="input-group-prepend">

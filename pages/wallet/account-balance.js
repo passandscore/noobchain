@@ -15,7 +15,6 @@ export default function AccountBalances() {
   const [safeBalance, setSafeBalance] = useState("");
   const [safeCount, setSafeCount] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
-  const walletStatus = useRecoilValue(lockState);
   const nodeUrl = "http://localhost:3001";
 
   const handleClick = async () => {
@@ -89,43 +88,46 @@ export default function AccountBalances() {
               <h1 className="display-5">Balance Details</h1>
             </div>
 
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Type</th>
-                  <th scope="col">Balance</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Safe</td>
-                  <td>{safeBalance.toLocaleString("en-CA")}</td>
-                </tr>
-                <tr>
-                  <td>Confirmed</td>
-                  <td>{confirmedBalance.toLocaleString("en-CA")}</td>
-                </tr>
-                <tr>
-                  <td>Pending</td>
-                  <td>{pendingBalance.toLocaleString("en-CA")}</td>
-                </tr>
-              </tbody>
-            </table>
+            <hr />
 
-            <ul className="list-group mt-5">
-              <li className="list-group-item">
-                <strong>SAFE | </strong> These funds are considered safe once{" "}
-                {safeCount} additional blocks have been mined.{" "}
-              </li>
-              <li className="list-group-item ">
-                <strong>CONFIRMED | </strong> Your transactions have been mined
-                and are on the blockchain.
-              </li>
-              <li className="list-group-item">
-                <strong>PENDING | </strong> These funds are currently waiting
-                for the next block to be mined.
-              </li>
-            </ul>
+            <div className="container w-75">
+              <table className="table" style={{ maxWidth: "60rem" }}>
+                <thead>
+                  <tr>
+                    <th scope="col">Status</th>
+                    <th scope="col">Balance</th>
+                    <th scope="col">Info</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Confirmed</td>
+                    <td>{confirmedBalance.toLocaleString("en-CA")}</td>
+                    <td>{`Your transactions have been mined and are on the blockchain.`}</td>
+                  </tr>
+                  <tr>
+                    <td>Safe</td>
+                    <td>{safeBalance.toLocaleString("en-CA")}</td>
+                    <td>{`These funds are considered safe once ${safeCount} additional blocks have been mined.`}</td>
+                  </tr>
+                  <tr>
+                    <td>Pending</td>
+                    <td>{pendingBalance.toLocaleString("en-CA")}</td>
+                    <td>{`These funds are currently waiting for the next block to be mined.`}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="card text-center mt-4">
+                <div className="card-header">Total Wallet Balance</div>
+                <div className="card-body">
+                  <h1 className="display-5">
+                    {`${confirmedBalance.toLocaleString("en-CA")}`}
+                  </h1>
+                  <p className="card-text">NOOBS</p>
+                </div>
+              </div>
+            </div>
           </>
         )}
       </div>

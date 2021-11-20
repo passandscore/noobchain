@@ -215,7 +215,7 @@ export default function Miner() {
           </div>
           <div className="col-sm-10">
             <h1 className="display-4">Mining</h1>
-            <div className="col-lg-auto">
+            <div className="col-lg-auto lead">
               Noob Mining is a blockchain based application that allows you to
               mine a blocks and receive NOOB coins. The miner will mine a block
               once a pending transaction is confirmed. You can also register a
@@ -277,7 +277,7 @@ export default function Miner() {
             </ToggleButton>
           ))}
         </ButtonGroup>
-        <p>
+        <p className="lead">
           <strong>Select Mining Difficulty:</strong> Represents the number of
           prefixed zeros (ex: 00000) that be present to make the hash valid. A
           higher difficulty level requires more computing power to verify
@@ -348,7 +348,7 @@ export default function Miner() {
                           ) : (
                             <Image
                               src="/images/mining-progress.gif"
-                              alt="blocks-in-hand"
+                              alt="progrees-bar"
                               width="50px"
                               height="30px"
                             />
