@@ -28,10 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
 
-app.get("/blockchain", function (req, res) {
-  res.send(noobchain);
-});
-
 /**
  * @notice - Displays statistics about the node
  */
@@ -438,6 +434,10 @@ app.get("/consensus", function (req, res) {
 });
 
 //========================= Block Explorer =========================
+app.get("/blockchain", function (req, res) {
+  res.send(noobchain);
+});
+
 app.get("/block/:blockHash", (req, res) => {
   const blockHash = req.params.blockHash;
   const correctBlock = noobchain.getBlock(blockHash);

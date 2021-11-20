@@ -1,12 +1,24 @@
 import Head from "next/head";
 import styles from "../../styles/BlockExplorer.module.css";
 import axios from "axios";
-
+import { useState, useEffect } from "react";
 export default function Home() {
-  const handleBlockchain = async () => {
-    const blockchain = await axios.get("http://localhost:3001/blockchain");
-    console.log(blockchain);
-  };
+  const [blockchain, setBlockchain] = useState(null);
+
+  useEffect(() => {
+    // All blockchain data is fetched from the node
+    const fetchData = async () => {
+      const allChainData = await axios.get("http://localhost:3001/blockchain");
+      allChainData = await allChainData.data;
+      setBlockchain(allChainData);
+      console.log(allChainData);
+    };
+    fetchData();
+  }, []);
+
+  const handleSearch = () => {};
+
+  const handleBlockchain = async () => {};
 
   const handleWallet = async () => {
     console.log("wallet");
@@ -48,6 +60,7 @@ export default function Home() {
                 borderBottomRightRadius: "10px",
                 cursor: "pointer",
               }}
+              onClick={handleSearch}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

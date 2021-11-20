@@ -150,7 +150,25 @@ export default function Miner() {
   };
 
   const handleAutomaticMineClick = async () => {
-    // update the node list to show that the node is mining
+    // Send the request to the node to start mining
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const body = {
+      minerAddress: minerAddress,
+      difficulty: 5,
+    };
+
+    const miningResult = await axios.post(
+      "http://localhost:9000/mine-next-block",
+      body,
+      config
+    );
+
+    const result = miningResult.data.message;
   };
 
   return (
@@ -256,38 +274,38 @@ export default function Miner() {
         </div>
       </div>
 
-      {/* Set Mining Difficulty */}
-      <div className="container mb-4 d-flex flex-column justify-content-center">
-        <ButtonGroup>
-          {miningDifficultyRange.map((radio, idx) => (
-            <ToggleButton
-              key={idx}
-              id={`radio-${idx}`}
-              type="radio"
-              variant={radio.value ? "outline-primary" : "outline-danger"}
-              name="radio"
-              value={radio.value}
-              checked={radioValue === radio.value}
-              onChange={(e) => {
-                setRadioValue(e.currentTarget.value);
-                setSelectedDifficulty(e.currentTarget.value);
-              }}
-            >
-              {radio.name}
-            </ToggleButton>
-          ))}
-        </ButtonGroup>
-        <p className="lead">
-          <strong>Select Mining Difficulty:</strong> Represents the number of
-          prefixed zeros (ex: 00000) that be present to make the hash valid. A
-          higher difficulty level requires more computing power to verify
-          transactions and mine new coins.{" "}
-        </p>
-      </div>
-
       {/* Manual Mode */}
       {mode === "manual" ? (
         <>
+          {/* Set Mining Difficulty */}
+          <div className="container mb-4 d-flex flex-column justify-content-center">
+            <ButtonGroup>
+              {miningDifficultyRange.map((radio, idx) => (
+                <ToggleButton
+                  key={idx}
+                  id={`radio-${idx}`}
+                  type="radio"
+                  variant={radio.value ? "outline-primary" : "outline-danger"}
+                  name="radio"
+                  value={radio.value}
+                  checked={radioValue === radio.value}
+                  onChange={(e) => {
+                    setRadioValue(e.currentTarget.value);
+                    setSelectedDifficulty(e.currentTarget.value);
+                  }}
+                >
+                  {radio.name}
+                </ToggleButton>
+              ))}
+            </ButtonGroup>
+            <p className="lead">
+              <strong>Select Mining Difficulty:</strong> Represents the number
+              of prefixed zeros (ex: 00000) that be present to make the hash
+              valid. A higher difficulty level requires more computing power to
+              verify transactions and mine new coins.{" "}
+            </p>
+          </div>
+
           <div className="container w-75 d-flex justify-content-center pb-5">
             <table className="table" style={{ maxWidth: "60rem" }}>
               <thead>
@@ -366,84 +384,20 @@ export default function Miner() {
 
         <>
           <div className="container w-75 d-flex justify-content-center">
-            <table
-              className="table"
-              style={{ maxWidth: "60rem", paddingBottom: "2rem" }}
-            >
-              <thead>
-                <tr>
-                  <th scope="col" className="text-center">
-                    Details
-                  </th>
-                  <th scope="col" className="text-center">
-                    Location
-                  </th>
-                  <th scope="col" className="text-center">
-                    Status
-                  </th>
-                  <th scope="col" className="text-center">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-
-              {/* <tbody>
-                {allNodes.map((node, index) => (
-                  <tr key={index}>
-                    <td className="text-center">
-                      <Link href="">
-                        <a
-                          onClick={() => {
-                            handleClick(node);
-                          }}
-                        >
-                          Node {index + 1}
-                        </a>
-                      </Link>
-                    </td>
-                    <td className="text-center">
-                      <Link href={`${node}/blockchain`}>
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: "blue" }}
-                        >
-                          {node}
-                        </a>
-                      </Link>
-                    </td>
-                    <td className="text-center">
-                      {currentNodes.includes(node) ? "Mining" : "-"}
-                    </td>
-                    <td className="justify-content-center d-flex">
-                      {!currentNodes.includes(node) ? (
-                        <button
-                          type="button"
-                          className="btn btn-success btn-sm px-4"
-                          value={node}
-                          onClick={(e) => {
-                            addNode(e.target.value);
-                          }}
-                        >
-                          Start
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm mx-2 px-4"
-                          value={node}
-                          onClick={(e) => {
-                            removeNode(e.target.value);
-                          }}
-                        >
-                          Stop
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody> */}
-            </table>
+            <Image
+              src="/images/mining-progress-lg.gif"
+              alt="progrees-bar"
+              width="200px"
+              height="200px"
+            />
+          </div>
+          <div className="container w-75 d-flex justify-content-center">
+            <p className="lead">
+              <strong>Auto-Mining Enabled:</strong> The miner will automatically
+              mine a block once a pending transaction is confirmed. The mining
+              difficulty is fixed at 5. This means that the required block hash
+              has to have 5 leading zeros to be considered valid.
+            </p>
           </div>
         </>
       )}
