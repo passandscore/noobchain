@@ -51,7 +51,6 @@ export default function Miner() {
   ];
 
   useEffect(() => {
-    console.log(onlineNodes);
     setRadioValue(selectedDifficulty);
   }, []);
 

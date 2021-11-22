@@ -600,7 +600,6 @@ class Blockchain {
     // The block is correct --> accept it
     this.chain.push(newBlock);
     this.miningJobs = {}; // Invalidate all mining jobs
-    // this.removePendingTransactions(newBlock.transactions);
     this.pendingTransactions = [];
     return newBlock;
   }
