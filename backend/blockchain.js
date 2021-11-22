@@ -242,7 +242,7 @@ class Blockchain {
   getBlock(blockHash) {
     let correctBlock = null;
     this.chain.forEach((block) => {
-      if (block.hash === blockHash) {
+      if (block.blockHash === blockHash) {
         correctBlock = block;
       }
     });
@@ -532,12 +532,14 @@ class Blockchain {
 
     // Prepare the next block candidate (block template)
     let prevBlockHash = this.chain[this.chain.length - 1].blockHash;
+    let blockReward = config.blockReward;
     let nextBlockCandidate = new Block(
       nextBlockIndex,
       transactions,
       this.currentDifficulty,
       prevBlockHash,
-      minerAddress
+      minerAddress,
+      blockReward
     );
 
     this.miningJobs[nextBlockCandidate.blockDataHash] = nextBlockCandidate;

@@ -10,7 +10,8 @@ module.exports = class Block {
     blockDataHash,
     nonce,
     dateCreated,
-    blockHash
+    blockHash,
+    blockReward
   ) {
     this.index = index; // integer
     this.transactions = transactions; // Transaction[]
@@ -28,6 +29,8 @@ module.exports = class Block {
 
     // Calculate the block hash if it is missing
     if (this.blockHash === undefined) this.calculateBlockHash();
+
+    this.blockReward = blockReward; // integer
   }
 
   calculateBlockDataHash() {

@@ -1,4 +1,5 @@
 import styles from "../../styles/BlockExplorer.module.css";
+import Link from "next/link";
 
 const LatestBlocks = ({ blocks }) => {
   const minedBy = (block) => {
@@ -48,12 +49,16 @@ const LatestBlocks = ({ blocks }) => {
                         </div>
                         <div className=" px-2">
                           <div className=" text-secondary">
-                            <a href="#" className={styles.noDecor}>
-                              {`${block.blockHash
-                                .split("")
-                                .slice(0, 8)
-                                .join("")}...`}
-                            </a>
+                            <Link
+                              href={`/explorer/blocks/${block.blockHash.toString()}`}
+                            >
+                              <a href="#" className={styles.noDecor}>
+                                {`${block.blockHash
+                                  .split("")
+                                  .slice(0, 8)
+                                  .join("")}...`}
+                              </a>
+                            </Link>
                           </div>
                         </div>
                       </div>

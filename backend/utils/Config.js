@@ -14,6 +14,7 @@ const nullSignature = [
   "0000000000000000000000000000000000000000000000000000000000000000",
   "0000000000000000000000000000000000000000000000000000000000000000",
 ];
+const blockReward = 50000;
 
 const genesisDate = "2021-11-01T00:00:00.000Z";
 const genesisFaucetTransaction = new Transaction(
@@ -39,7 +40,8 @@ const genesisBlock = new Block(
   undefined, // block data hash
   0, // nonce
   genesisDate, // date created
-  undefined // block hash
+  undefined, // block hash
+  0 // mining reward
 );
 
 module.exports = {
@@ -54,7 +56,7 @@ module.exports = {
   startDifficulty: 5,
   minTransactionFee: 10,
   maxTransactionFee: 1000000,
-  blockReward: 50000,
+  blockReward,
   maxTransferValue: 10000000000000,
   safeConfirmCount: 3,
   genesisBlock,
