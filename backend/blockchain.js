@@ -250,16 +250,16 @@ class Blockchain {
   }
 
   /**
-   * @notice - Searches the blockchain for a transaction with the given transactionId
-   * @param transactionId - The transactionId of the transaction to be returned
-   * @return - The transaction with the given transactionId along with the block it was found in
+   * @notice - Searches the blockchain for a transaction with the given transaction data hash
+   * @param transactionHash - The transaction data hash of the transaction to be returned
+   * @return - An object containing the transaction details or undefined
    */
-  getTransaction(transactionId) {
+  getTransaction(transactionHash) {
     let correctTransaction = null;
     let correctBlock = null;
     this.chain.forEach((block) => {
       block.transactions.forEach((transaction) => {
-        if (transaction.transactionId === transactionId) {
+        if (transaction.transactionDataHash === transactionHash) {
           correctTransaction = transaction;
           correctBlock = block;
         }

@@ -2,6 +2,7 @@ import Head from "next/head";
 import styles from "../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
+
 import SearchBar from "../../Components/Explorer/SearchBar";
 import LatestBlocks from "../../Components/Explorer/LatestBlocks";
 import LastestTransactions from "../../Components/Explorer/LastestTransactions";
@@ -10,16 +11,18 @@ export default function Home() {
   const [blockchain, setBlockchain] = useState(null);
   const [blocks, setblocks] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [search, setSearch] = useState(true);
 
   useEffect(() => {
     // All blockchain data is fetched from the node
-    axios.get(`http://localhost:3001/blockchain`).then((res) => {
-      setBlockchain(res.data.chain);
 
+    (async function loadBlockchain() {
+      const blockdata = await axios.get(`http://localhost:3001/blockchain`);
+      console.log(blockdata.data);
+      // setBlockchain(chain.data.chain);
       let lastestBlocks = [];
-
       // Construct lastest blocks
-      res.data.chain.forEach((b) => {
+      blockdata.data.chain.forEach((b) => {
         let block = {};
         block.blockHash = b.blockHash;
         block.transactionCount = b.transactions.length;
@@ -31,21 +34,30 @@ export default function Home() {
       });
       lastestBlocks = lastestBlocks.reverse().slice(0, 10);
       setblocks(lastestBlocks);
-    });
 
-    axios.get(`http://localhost:3001/all-transactions`).then((res) => {
-      console.log(res.data);
-      if (res.data.length > 0) {
-        setTransactions(res.data.reverse().slice(0, 10));
+      // Construct transactions
+      const trans = await axios.get(`http://localhost:3001/all-transactions`);
+      console.log(trans);
+      if (trans.data.length > 0) {
+        setTransactions(trans.data.reverse().slice(0, 10));
       }
-    });
+    })();
   }, []);
 
   const handleBlockchain = async () => {};
 
-  const handleWallet = async () => {
-    console.log("wallet");
-  };
+  // const handleShow = () => {
+  //   const txHash = _explorerDetails.transaction;
+  //   console.log(txHash);
+  //   axios.get(`http://localhost:3001/transaction/${txHash}`).then((res) => {
+  //     console.log(res.data);
+  //     if (res.data.length > 0) {
+  //       setTransactions(res.data.reverse().slice(0, 10));
+  //     }
+  //   });
+  //   setShow(true);
+  // };
+
   return (
     <>
       <Head>

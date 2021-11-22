@@ -1,4 +1,5 @@
 import styles from "../../styles/BlockExplorer.module.css";
+import Link from "next/link";
 
 const LastestTransactions = ({ transactions }) => {
   const trimAddress = (address) => {
@@ -52,12 +53,16 @@ const LastestTransactions = ({ transactions }) => {
                         </div>
                         <div className=" px-2">
                           <div className=" text-secondary">
-                            <a href="#" className={styles.noDecor}>
-                              {`${tran.transactionDataHash
-                                .split("")
-                                .slice(0, 8)
-                                .join("")}...`}
-                            </a>
+                            <Link
+                              href={`/explorer/transactions/${tran.transactionDataHash.toString()}`}
+                            >
+                              <a className={styles.noDecor}>
+                                {`${tran.transactionDataHash
+                                  .split("")
+                                  .slice(0, 8)
+                                  .join("")}...`}
+                              </a>
+                            </Link>
                           </div>
                         </div>
                       </div>

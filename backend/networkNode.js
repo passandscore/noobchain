@@ -363,9 +363,9 @@ app.get("/block/:blockHash", (req, res) => {
   res.json({ block: correctBlock });
 });
 
-app.get("/transaction/:transactionId", (req, res) => {
-  const transactionId = req.params.transactionId;
-  const transactionData = noobchain.getTransaction(transactionId);
+app.get("/transaction/:transactionHash", (req, res) => {
+  const transactionHash = req.params.transactionHash;
+  const transactionData = noobchain.getTransaction(transactionHash);
   res.json({ transaction: transactionData });
 });
 
