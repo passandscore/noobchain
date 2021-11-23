@@ -384,10 +384,7 @@ class Blockchain {
     this.chain.forEach((block) => {
       block.transactions.forEach((transaction) => {
         // Add the transaction to the list if it is from the given address
-        if (
-          transaction.sender === address ||
-          transaction.recipient === address
-        ) {
+        if (transaction.to === address || transaction.from === address) {
           addressTransactions.push(transaction);
         }
       });
@@ -395,16 +392,36 @@ class Blockchain {
     // Calculate the balance of the given address
     let balance = 0;
     addressTransactions.forEach((transaction) => {
-      if (transaction.sender === address) {
-        balance -= Number(transaction.amount);
-      } else if (transaction.recipient === address) {
-        balance += Number(transaction.amount);
+      if (transaction.from === address) {
+        balance -= Number(transaction.value);
+      } else if (transaction.to === address) {
+        balance += Number(transaction.value);
       }
     });
     return {
       transactions: addressTransactions,
       addressBalance: balance,
     };
+  }
+
+  /**
+   * @notice - Searches the blockchain for all addresses within all transactions
+   * @return - An array of all addresses
+   */
+  getAllAddresses() {
+    let addresses = new Set();
+    this.chain.forEach((block) => {
+      block.transactions.forEach((transaction) => {
+        // Add the transaction to the list if it is from the given address
+        addresses.add(transaction.to);
+        addresses.add(transaction.from);
+        if (transaction.to) {
+        }
+        if (transaction.from) {
+        }
+      });
+    });
+    return Array.from(addresses);
   }
 
   /**

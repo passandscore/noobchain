@@ -44,6 +44,15 @@ app.get("/info", (req, res) => {
   });
 });
 
+/**
+ * @notice - Displays all addresses in the node
+ * @param address - Array of addresses
+ */
+app.get("/addresses", (req, res) => {
+  let allAddresses = noobchain.getAllAddresses();
+  res.json(allAddresses);
+});
+
 //========================= Transactions =========================
 
 /**

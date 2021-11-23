@@ -73,15 +73,23 @@ const LastestTransactions = ({ transactions }) => {
                     <div className="px-4">
                       <div className="text-secondary">
                         From:{" "}
-                        <a href="#" className={styles.noDecor}>
-                          {trimAddress(tran.from)}
-                        </a>
+                        <Link
+                          href={`/explorer/addresses/${tran.from.toString()}`}
+                        >
+                          <a href="#" className={styles.noDecor}>
+                            {trimAddress(tran.from)}
+                          </a>
+                        </Link>
                       </div>
                       <div className="text-secondary">
                         To:{" "}
-                        <a href="#" className={styles.noDecor}>
-                          {trimAddress(tran.to)}
-                        </a>
+                        <Link
+                          href={`/explorer/addresses/${tran.to.toString()}`}
+                        >
+                          <a href="#" className={styles.noDecor}>
+                            {trimAddress(tran.to)}
+                          </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
