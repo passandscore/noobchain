@@ -12,14 +12,15 @@ import {
   address,
   miningDifficulty,
   nodeList,
+  miningDetails,
 } from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
 import { Modal, ButtonGroup, ToggleButton } from "react-bootstrap";
 
 export default function Miner() {
-  const [mode, setMode] = useRecoilState(miningMode);
-  const [selectedDifficulty, setSelectedDifficulty] =
-    useRecoilState(miningDifficulty);
+  // const [mode, setMode] = useRecoilState(miningMode);
+  const [_miningDetails, _SetMiningDetails] = useRecoilState(miningDetails);
+
   const walletAddress = useRecoilValue(address);
   const onlineNodes = useRecoilValue(nodeList);
 
@@ -29,7 +30,7 @@ export default function Miner() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [checked, setChecked] = useState(false);
-  const [radioValue, setRadioValue] = useState(selectedDifficulty);
+  const [radioValue, setRadioValue] = useState(_miningDetails.difficulty);
   const [allNodes, setAllNodes] = useState([
     { url: "http://localhost:3001", isMining: false },
     { url: "http://localhost:3002", isMining: false },
@@ -51,12 +52,14 @@ export default function Miner() {
   ];
 
   useEffect(() => {
-    setRadioValue(selectedDifficulty);
+    console.log(_miningDetails);
+    setRadioValue(_miningDetails.difficulty);
   }, []);
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
-    setMode(newMode);
+    // setMode(newMode);
+    _SetMiningDetails({ ..._miningDetails, mode: newMode });
 
     if (newMode === "manual") {
       setAutoDetails(false);
@@ -114,7 +117,7 @@ export default function Miner() {
 
     const body = {
       minerAddress: walletAddress,
-      difficulty: selectedDifficulty,
+      difficulty: _miningDetails.difficulty,
     };
 
     const miningResult = await axios.post(
@@ -148,27 +151,7 @@ export default function Miner() {
     }
   };
 
-  const handleAutomaticMineClick = async () => {
-    // Send the request to the node to start mining
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    const body = {
-      minerAddress: minerAddress,
-      difficulty: 5,
-    };
-
-    const miningResult = await axios.post(
-      "http://localhost:9000/mine-next-block",
-      body,
-      config
-    );
-
-    const result = miningResult.data.message;
-  };
+  const handleAutomaticMineClick = async () => {};
 
   return (
     <>
@@ -250,7 +233,7 @@ export default function Miner() {
             value="manual"
             onClick={(e) => handleModeChange(e)}
             className={`${
-              mode == "automatic"
+              _miningDetails.mode == "automatic"
                 ? "btn btn-secondary btn-lg"
                 : "btn btn-primary btn-lg"
             }`}
@@ -263,7 +246,7 @@ export default function Miner() {
             value="automatic"
             onClick={(e) => handleModeChange(e)}
             className={`${
-              mode == "automatic"
+              _miningDetails.mode == "automatic"
                 ? "btn btn-primary btn-lg"
                 : "btn btn-secondary btn-lg"
             }`}
@@ -274,7 +257,7 @@ export default function Miner() {
       </div>
 
       {/* Manual Mode */}
-      {mode === "manual" ? (
+      {_miningDetails.mode === "manual" ? (
         <>
           {/* Set Mining Difficulty */}
           <div className="container mb-4 d-flex flex-column justify-content-center">
@@ -290,7 +273,10 @@ export default function Miner() {
                   checked={radioValue === radio.value}
                   onChange={(e) => {
                     setRadioValue(e.currentTarget.value);
-                    setSelectedDifficulty(e.currentTarget.value);
+                    _SetMiningDetails({
+                      ..._miningDetails,
+                      difficulty: e.currentTarget.value,
+                    });
                   }}
                 >
                   {radio.name}
@@ -390,12 +376,15 @@ export default function Miner() {
               height="200px"
             />
           </div>
-          <div className="container w-75 d-flex justify-content-center">
+          <div className="container w-75 ">
             <p className="lead">
               <strong>Auto-Mining Enabled:</strong> The miner will automatically
               mine a block once a pending transaction is confirmed. The mining
               difficulty is fixed at 5. This means that the required block hash
               has to have 5 leading zeros to be considered valid.
+            </p>
+            <p className="lead">
+              <strong>Default Miner Address:</strong> {_miningDetails.address}
             </p>
           </div>
         </>

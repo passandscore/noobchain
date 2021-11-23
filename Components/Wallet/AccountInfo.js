@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { defaultNode, address, miningMode } from "../../recoil/atoms";
+import { defaultNode, address, miningDetails } from "../../recoil/atoms";
 
 const AccountInfo = () => {
   // const [address, setAddress] = useState("");
   const node = useRecoilValue(defaultNode);
   const walletAddress = useRecoilValue(address);
-  const _miningMode = useRecoilValue(miningMode);
+  const _miningDetails = useRecoilValue(miningDetails);
 
   // useEffect(() => {
   //   setAddress(sessionStorage.getItem("address"));
@@ -44,7 +44,7 @@ const AccountInfo = () => {
           <ul className="list-group">
             <li className="list-group-item">
               <strong>Node:</strong> {node} | <strong>Mining:</strong>{" "}
-              {_miningMode}{" "}
+              {_miningDetails.mode}{" "}
             </li>
           </ul>
         </Toast.Body>

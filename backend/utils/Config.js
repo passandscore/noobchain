@@ -7,6 +7,11 @@ const faucetPrivateKey =
 const faucetPublicKey = CryptoUtils.privateKeyToPublicKey(faucetPrivateKey);
 const faucetAddress = CryptoUtils.publicKeyToAddress(faucetPublicKey);
 
+const minerPrivateKey =
+  "fb71fe8f62a85d4f6e8be3a1de231c2ab2744d8f919885c23142f246e00634eb";
+const minerPublicKey = CryptoUtils.privateKeyToPublicKey(faucetPrivateKey);
+const minerAddress = CryptoUtils.publicKeyToAddress(faucetPublicKey);
+
 const nullAddress = "0000000000000000000000000000000000000000";
 const nullPubKey =
   "00000000000000000000000000000000000000000000000000000000000000000";
@@ -36,7 +41,7 @@ const genesisBlock = new Block(
   [genesisFaucetTransaction], // transactions array
   0, // currentDifficulty
   undefined, // previous block hash
-  nullAddress, // mined by (address)
+  minerAddress, // mined by (address)
   undefined, // block data hash
   0, // nonce
   genesisDate, // date created
@@ -50,6 +55,9 @@ module.exports = {
   faucetPrivateKey,
   faucetPublicKey,
   faucetAddress,
+  minerPrivateKey,
+  minerPublicKey,
+  minerAddress,
   nullAddress,
   nullPubKey,
   nullSignature,

@@ -30,6 +30,17 @@ export const miningDifficulty = atom({
   default: "5",
 });
 
+export const miningDetails = atom({
+  key: "miningDetails",
+  default: {
+    difficulty: "5",
+    mode: "automatic",
+    privKey: "fb71fe8f62a85d4f6e8be3a1de231c2ab2744d8f919885c23142f246e00634eb",
+    pubKey: "6fc5735fc9dd87e6d7e01af2799387a9f3000f6ad7b4e8d8a35c4608f36131211",
+    address: "eb3d3124e445546996d9628e86be514bf3cb9275",
+  },
+});
+
 export const faucetDetails = atom({
   key: "faucetDetails",
   default: {

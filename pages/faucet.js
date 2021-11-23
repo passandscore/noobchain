@@ -5,7 +5,12 @@ import styles from "../styles/Wallet.module.css";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { defaultNode, nodeList, faucetDetails } from "../recoil/atoms";
+import {
+  defaultNode,
+  nodeList,
+  faucetDetails,
+  miningDetails,
+} from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
 import hashes from "../lib/hashes";
 import elliptic from "../lib/elliptic";
@@ -16,15 +21,14 @@ import { Modal, Button, Overlay, Popover } from "react-bootstrap";
 export default function Wallet() {
   const _defaultNode = useRecoilValue(defaultNode);
   const _faucetDetails = useRecoilValue(faucetDetails);
+  const _miningDetails = useRecoilValue(miningDetails);
   const [balance, setBalance] = useState(0);
   const [userAddress, setUserAddress] = useState("");
   const [show, setShow] = useState(false);
   const [isMining, setIsMining] = useState(false);
   const [selectedNode, setSelectedNode] = useState(_defaultNode);
   const [txHash, setTxHash] = useState("");
-  const [minerAddress, setMinerAddress] = useState(
-    "0000000000000000000000000000000000000000"
-  );
+
   const [showDonate, setShowDonate] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
@@ -97,7 +101,6 @@ export default function Wallet() {
         return;
       }
     }
-    console.log(_faucetDetails.address);
     let transaction = {
       from: _faucetDetails.address,
       to: userAddress,
@@ -112,13 +115,11 @@ export default function Wallet() {
     let transactionJSON = JSON.stringify(transaction);
     transaction.transactionDataHash = new hashes.SHA256().hex(transactionJSON);
 
-    console.log(_faucetDetails);
     // Sign the transaction hash
     transaction.senderSignature = signData(
       transaction.transactionDataHash,
       _faucetDetails.privKey
     );
-    console.log(transaction);
     sendTransaction(transaction);
   };
 
@@ -137,13 +138,11 @@ export default function Wallet() {
           "Content-Type": "application/json",
         },
       };
-      console.log(signedTx);
       const result = await axios.post(
         `${nodeUrl}/transaction/broadcast`,
         signedTx,
         config
       );
-      console.log(result);
 
       const error = result.data.error;
 
@@ -190,8 +189,8 @@ export default function Wallet() {
     };
 
     const body = {
-      minerAddress: minerAddress,
-      difficulty: 5,
+      minerAddress: _miningDetails.address,
+      difficulty: _miningDetails.difficulty,
     };
 
     const miningResult = await axios.post(
