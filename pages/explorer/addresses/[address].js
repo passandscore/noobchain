@@ -63,15 +63,6 @@ const AddressDetails = (props) => {
             </div>
           </div>
 
-          {/* <div className="">
-            <h4 className="display-5">
-              Address <span className="fs-3">{props.address}</span>{" "}
-            </h4>
-            <h4 className="display-6">
-              Balance
-              <span className="fs-3">{props.addressData.addressBalance}</span>
-            </h4>
-          </div> */}
           <table className="table">
             <thead>
               <tr>
@@ -88,49 +79,47 @@ const AddressDetails = (props) => {
             <tbody>
               {props.addressData.transactions.length > 0 &&
                 props.addressData.transactions.reverse().map((d, index) => (
-                  <>
-                    <tr key={index}>
-                      <td>
-                        <Link
-                          href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
+                  <tr key={index}>
+                    <td>
+                      <Link
+                        href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
+                      >
+                        {`${d.transactionDataHash.slice(0, 20)}...`}
+                      </Link>
+                    </td>
+                    <td>{d.minedInBlockIndex}</td>
+                    <td>
+                      <Link href={`/explorer/addresses/${d.from.toString()}`}>
+                        {`${d.from.slice(0, 20)}...`}
+                      </Link>
+                    </td>
+                    <td>
+                      <div className="d-flex">
+                        <button
+                          type="button"
+                          className={`${
+                            d.from === props.address
+                              ? "btn btn-sm btn-warning"
+                              : "btn btn-sm btn-success"
+                          }`}
+                          style={{
+                            fontSize: "0.7rem",
+                            marginRight: "0.5rem",
+                            padding: "0.2rem",
+                            width: "2rem",
+                            borderRadius: "0.5rem",
+                          }}
                         >
-                          {`${d.transactionDataHash.slice(0, 20)}...`}
+                          {`${d.from === props.address ? "OUT" : "IN"}`}
+                        </button>
+                        <Link href={`/explorer/addresses/${d.to.toString()}`}>
+                          {`${d.to.slice(0, 20)}...`}
                         </Link>
-                      </td>
-                      <td>{d.minedInBlockIndex}</td>
-                      <td>
-                        <Link href={`/explorer/addresses/${d.from.toString()}`}>
-                          {`${d.from.slice(0, 20)}...`}
-                        </Link>
-                      </td>
-                      <td>
-                        <div className="d-flex">
-                          <button
-                            type="button"
-                            className={`${
-                              d.from === props.address
-                                ? "btn btn-sm btn-warning"
-                                : "btn btn-sm btn-success"
-                            }`}
-                            style={{
-                              fontSize: "0.7rem",
-                              marginRight: "0.5rem",
-                              padding: "0.2rem",
-                              width: "2rem",
-                              borderRadius: "0.5rem",
-                            }}
-                          >
-                            {`${d.from === props.address ? "OUT" : "IN"}`}
-                          </button>
-                          <Link href={`/explorer/addresses/${d.to.toString()}`}>
-                            {`${d.to.slice(0, 20)}...`}
-                          </Link>
-                        </div>
-                      </td>
-                      <td>{d.value}</td>
-                      <td>{d.fee}</td>
-                    </tr>
-                  </>
+                      </div>
+                    </td>
+                    <td>{d.value}</td>
+                    <td>{d.fee}</td>
+                  </tr>
                 ))}
             </tbody>
           </table>

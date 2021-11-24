@@ -1,29 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
-import styles from "../../../../../styles/BlockExplorer.module.css";
+import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import SearchBar from "../../../../../Components/Explorer/SearchBar";
+import SearchBar from "../../../Components/Explorer/SearchBar";
 
-export const getStaticPaths = async () => {
-  const blockData = await axios.get(`http://localhost:3001/blockchain`);
-
-  const paths = blockData.data.chain.map((block) => ({
-    params: {
-      block: block.blockHash.toString(),
-    },
-  }));
-
-  return {
-    paths,
-    fallback: false,
-  };
-};
-
-export const getStaticProps = async (context) => {
-  const { block } = context.params;
+export const getStaticProps = async () => {
   const transactionData = await axios.get(
-    `http://localhost:3001/block/${block}/transactions`
+    `http://localhost:3001/all-transactions`
   );
   return {
     props: {
@@ -32,14 +16,20 @@ export const getStaticProps = async (context) => {
   };
 };
 
-const BlockTransactions = (props) => {
+const AllTransactions = (props) => {
   const [search, setSearch] = useState(false);
-  const [blockValue, setBlockValue] = useState(0);
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [totalValue, setTotalValue] = useState(0);
   const handleBlockchain = async () => {};
 
   useEffect(() => {
-    let value = props.block.map((t) => t.value).reduce((a, b) => a + b);
-    setBlockValue(value);
+    // construct the array of transactions
+    const transactionData = Object.values(props);
+    setAllTransactions(transactionData);
+
+    // calculate the total value of all transactions
+    let value = transactionData.map((t) => t.value).reduce((a, b) => a + b);
+    setTotalValue(value);
   }, []);
 
   return (
@@ -60,11 +50,11 @@ const BlockTransactions = (props) => {
         <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
             <div className="card-header">
-              Transactions: {props.block.length}
+              Transactions: {allTransactions.length}
             </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
-                <p>Block Value: {blockValue} NOOB</p>
+                <p>Total Value: {totalValue} NOOB</p>
               </blockquote>
             </div>
           </div>
@@ -83,8 +73,8 @@ const BlockTransactions = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.block.length > 0 &&
-                props.block.reverse().map((d, index) => (
+              {allTransactions.length > 0 &&
+                allTransactions.reverse().map((d, index) => (
                   <tr key={index}>
                     <td>
                       <Link
@@ -135,4 +125,4 @@ const BlockTransactions = (props) => {
   );
 };
 
-export default BlockTransactions;
+export default AllTransactions;

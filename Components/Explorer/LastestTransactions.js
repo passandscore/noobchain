@@ -108,16 +108,18 @@ const LastestTransactions = ({ transactions }) => {
               </div>
             ))}
         </div>
-        <div
-          className="card-footer  bg-primary  text-light  font-weight-bold text-center"
-          style={{
-            borderBottomLeftRadius: "10px",
-            borderBottomRightRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          View all Transactions
-        </div>
+        <Link href="/explorer/transactions" passHref={true}>
+          <div
+            className="card-footer  bg-primary  text-light  font-weight-bold text-center"
+            style={{
+              borderBottomLeftRadius: "10px",
+              borderBottomRightRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            View all Transactions
+          </div>
+        </Link>
       </div>
     </div>
   );
