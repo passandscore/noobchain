@@ -2,7 +2,6 @@ import Head from "next/head";
 import styles from "../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
-
 import SearchBar from "../../Components/Explorer/SearchBar";
 import LatestBlocks from "../../Components/Explorer/LatestBlocks";
 import LastestTransactions from "../../Components/Explorer/LastestTransactions";
@@ -40,8 +39,6 @@ export default function Home() {
       }
     })();
   }, []);
-
-  const handleBlockchain = async () => {};
 
   return (
     <>

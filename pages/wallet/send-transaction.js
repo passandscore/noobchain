@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import { Modal, Button } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
@@ -22,6 +23,7 @@ export default function SendTransaction() {
   const [successTx, setSuccessTx] = useState(false);
   const [fee, setFee] = useState(20);
   const [donate, setDonate] = useState(false);
+  const [isMining, setIsMining] = useState(false);
 
   const walletStatus = useRecoilValue(lockState);
   const _faucetDetails = useRecoilValue(faucetDetails);
@@ -76,6 +78,11 @@ export default function SendTransaction() {
         theme: "colored",
       });
       return;
+    }
+
+    // Set data to be signed in the transaction is a donation to the faucet
+    if (donate) {
+      setData("Faucet Donation");
     }
 
     let transaction = {
@@ -142,6 +149,8 @@ export default function SendTransaction() {
 
         // Check Miner Mode
         if (_miningDetails.mode === "automatic") {
+          setIsMining(true);
+
           const body = {
             minerAddress: _miningDetails.address,
             difficulty: _miningDetails.difficulty,
@@ -160,6 +169,7 @@ export default function SendTransaction() {
               theme: "colored",
             });
           } else {
+            setIsMining(false);
             toast.success("Transaction successfully mined!", {
               position: "bottom-right",
               theme: "colored",
@@ -312,15 +322,23 @@ export default function SendTransaction() {
             <Button variant="btn btn-outline-primary" onClick={signTransaction}>
               Sign Transaction
             </Button>
-            {isSigned && (
-              <Button
-                variant="success"
-                onClick={SendTransaction}
-                disabled={!isSigned ? "disabled" : ""}
-              >
-                Send Transaction
-              </Button>
-            )}
+            {isSigned &&
+              (isMining ? (
+                <Image
+                  src="/images/mining-progress.gif"
+                  alt="progrees-bar"
+                  width="50px"
+                  height="30px"
+                />
+              ) : (
+                <Button
+                  variant="success"
+                  onClick={SendTransaction}
+                  disabled={!isSigned ? "disabled" : ""}
+                >
+                  Send Transaction
+                </Button>
+              ))}
           </Modal.Footer>
         </Modal>
 

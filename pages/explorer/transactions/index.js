@@ -4,6 +4,7 @@ import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SearchBar from "../../../Components/Explorer/SearchBar";
+import AccountInfo from "../../../Components/Wallet/AccountInfo";
 
 export const getStaticProps = async () => {
   const transactionData = await axios.get(
@@ -24,7 +25,7 @@ const AllTransactions = (props) => {
   useEffect(() => {
     // construct the array of transactions
     const transactionData = Object.values(props);
-    setAllTransactions(transactionData);
+    setAllTransactions(transactionData.reverse());
 
     // calculate the total value of all transactions
     let value = transactionData.map((t) => t.value).reduce((a, b) => a + b);
@@ -46,7 +47,10 @@ const AllTransactions = (props) => {
         }}
       >
         <SearchBar />
-        <div className="container" style={{ marginTop: "8rem" }}>
+        <div
+          className="container"
+          style={{ marginTop: "8rem", height: "25rem" }}
+        >
           <div className="card">
             <div className="card-header">
               Transactions: {allTransactions.length}
@@ -58,74 +62,90 @@ const AllTransactions = (props) => {
             </div>
           </div>
 
-          <table className="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">Txn Hash</th>
-                <th scope="col">Block</th>
-                <th scope="col">From</th>
-                <th scope="col" style={{ paddingLeft: "3rem" }}>
-                  To
-                </th>
-                <th scope="col">Value</th>
-                <th scope="col">[Txn Fee]</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allTransactions.length > 0 &&
-                allTransactions.reverse().map((d, index) => (
-                  <Link
-                    href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
-                    key={index}
-                    passHref={true}
-                  >
-                    <tr style={{ cursor: "pointer" }}>
-                      <td>
-                        <Link
-                          href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
-                        >
-                          {`${d.transactionDataHash.slice(0, 20)}...`}
-                        </Link>
-                      </td>
-                      <td>{d.minedInBlockIndex}</td>
-                      <td>
-                        <Link href={`/explorer/addresses/${d.from.toString()}`}>
-                          {`${d.from.slice(0, 20)}...`}
-                        </Link>
-                      </td>
-                      <td>
-                        <div className="d-flex">
-                          <button
-                            type="button"
-                            className={`${
-                              d.from === props.address
-                                ? "btn btn-sm btn-warning"
-                                : "btn btn-sm btn-success"
-                            }`}
-                            style={{
-                              fontSize: "0.7rem",
-                              marginRight: "0.5rem",
-                              padding: "0.2rem",
-                              width: "2rem",
-                              borderRadius: "0.5rem",
-                            }}
+          <div
+            className="table-responsive"
+            style={{ height: "26rem", overflow: "auto" }}
+          >
+            <table className="table table-hover ">
+              <thead>
+                <tr>
+                  <th scope="col" style={{ width: "12rem" }}>
+                    Txn Hash
+                  </th>
+                  <th scope="col" style={{ textAlign: "center" }}>
+                    Block
+                  </th>
+                  <th scope="col">From</th>
+                  <th scope="col" style={{ paddingLeft: "3rem" }}>
+                    To
+                  </th>
+                  <th scope="col">Value</th>
+                  <th scope="col">[Txn Fee]</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allTransactions.length > 0 &&
+                  allTransactions.map((d, index) => (
+                    <Link
+                      href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
+                      key={index}
+                      passHref={true}
+                    >
+                      <tr style={{ cursor: "pointer" }}>
+                        <td>
+                          <Link
+                            href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
                           >
-                            {`${d.from === props.address ? "OUT" : "IN"}`}
-                          </button>
-                          <Link href={`/explorer/addresses/${d.to.toString()}`}>
-                            {`${d.to.slice(0, 20)}...`}
+                            {`${d.transactionDataHash.slice(0, 20)}...`}
                           </Link>
-                        </div>
-                      </td>
-                      <td>{d.value}</td>
-                      <td>{d.fee}</td>
-                    </tr>
-                  </Link>
-                ))}
-            </tbody>
-          </table>
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {d.minedInBlockIndex}
+                        </td>
+                        <td>
+                          <Link
+                            href={`/explorer/addresses/${d.from.toString()}`}
+                          >
+                            {`${d.from.slice(0, 20)}...`}
+                          </Link>
+                        </td>
+                        <td>
+                          <div className="d-flex">
+                            <button
+                              type="button"
+                              className={`${
+                                d.from === props.address
+                                  ? "btn btn-sm btn-warning"
+                                  : "btn btn-sm btn-success"
+                              }`}
+                              style={{
+                                fontSize: "0.7rem",
+                                marginRight: "0.5rem",
+                                padding: "0.2rem",
+                                width: "2rem",
+                                borderRadius: "0.5rem",
+                              }}
+                            >
+                              {`${d.from === props.address ? "OUT" : "IN"}`}
+                            </button>
+                            <Link
+                              href={`/explorer/addresses/${d.to.toString()}`}
+                            >
+                              {`${d.to.slice(0, 20)}...`}
+                            </Link>
+                          </div>
+                        </td>
+                        <td>{d.value}</td>
+                        <td>{d.fee}</td>
+                      </tr>
+                    </Link>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+      <AccountInfo />
     </>
   );
 };

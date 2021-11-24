@@ -1,19 +1,13 @@
 import { Toast } from "react-bootstrap";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { defaultNode, address, miningDetails } from "../../recoil/atoms";
 
 const AccountInfo = () => {
-  // const [address, setAddress] = useState("");
   const node = useRecoilValue(defaultNode);
   const walletAddress = useRecoilValue(address);
   const _miningDetails = useRecoilValue(miningDetails);
-
-  // useEffect(() => {
-  //   setAddress(sessionStorage.getItem("address"));
-  // }, []);
 
   return (
     <div
@@ -35,7 +29,9 @@ const AccountInfo = () => {
           />
           <strong className="me-auto mx-1">Address:</strong>
           {walletAddress ? (
-            <Link href="/explorer">{walletAddress}</Link>
+            <Link href={`/explorer/addresses/${walletAddress}`}>
+              {walletAddress}
+            </Link>
           ) : (
             <Link href="/wallet">Connect to wallet</Link>
           )}

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { nodeList, defaultNode } from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 export default function Nodes() {
   const [currentNodes, setCurrentNodes] = useRecoilState(nodeList);

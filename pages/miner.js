@@ -7,29 +7,21 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  miningMode,
-  address,
-  miningDifficulty,
-  nodeList,
-  miningDetails,
-} from "../recoil/atoms";
+import { address, nodeList, miningDetails } from "../recoil/atoms";
 import AccountInfo from "../Components/Wallet/AccountInfo";
-import { Modal, ButtonGroup, ToggleButton } from "react-bootstrap";
+import { Modal, ButtonGroup, ToggleButton, Button } from "react-bootstrap";
 
 export default function Miner() {
-  // const [mode, setMode] = useRecoilState(miningMode);
   const [_miningDetails, _SetMiningDetails] = useRecoilState(miningDetails);
-
   const walletAddress = useRecoilValue(address);
   const onlineNodes = useRecoilValue(nodeList);
-
-  const [autoDetails, setAutoDetails] = useState(true);
   const [show, setShow] = useState(false);
   const [nodeInfo, setNodeInfo] = useState([]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [checked, setChecked] = useState(false);
+  const [defaultMinerAddress, setDefaultMinerAddress] = useState(
+    _miningDetails.address
+  );
   const [radioValue, setRadioValue] = useState(_miningDetails.difficulty);
   const [allNodes, setAllNodes] = useState([
     { url: "http://localhost:3001", isMining: false },
@@ -39,8 +31,6 @@ export default function Miner() {
     { url: "http://localhost:3005", isMining: false },
   ]);
   const miningDifficultyRange = [
-    // { name: "1", value: "1" },
-    // { name: "2", value: "2" },
     { name: "3", value: "3" },
     { name: "4", value: "4" },
     { name: "5", value: "5" },
@@ -57,14 +47,7 @@ export default function Miner() {
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
-    // setMode(newMode);
     _SetMiningDetails({ ..._miningDetails, mode: newMode });
-
-    if (newMode === "manual") {
-      setAutoDetails(false);
-    } else {
-      handleAutomaticMineClick();
-    }
   };
 
   const handleClick = async (nodeUrl) => {
@@ -148,7 +131,18 @@ export default function Miner() {
     }
   };
 
-  const handleAutomaticMineClick = async () => {};
+  const changeDefaultMiner = () => {
+    if (_miningDetails.address === "eb3d3124e445546996d9628e86be514bf3cb9275") {
+      _SetMiningDetails({ ..._miningDetails, address: walletAddress });
+      setDefaultMinerAddress(walletAddress);
+    } else {
+      _SetMiningDetails({
+        ..._miningDetails,
+        address: "eb3d3124e445546996d9628e86be514bf3cb9275",
+      });
+      setDefaultMinerAddress("eb3d3124e445546996d9628e86be514bf3cb9275");
+    }
+  };
 
   return (
     <>
@@ -214,7 +208,7 @@ export default function Miner() {
             <h1 className="display-4">Mining</h1>
             <div className="col-lg-auto lead">
               Noob Mining is a blockchain based application that allows you to
-              mine a blocks and receive NOOB coins. The miner will mine a block
+              mine blocks and receive NOOB coins. The miner will mine a block
               once a pending transaction is confirmed. You can also register a
               node to the network and have it mine blocks.
             </div>
@@ -381,7 +375,30 @@ export default function Miner() {
               has to have 5 leading zeros to be considered valid.
             </p>
             <p className="lead">
-              <strong>Default Miner Address:</strong> {_miningDetails.address}
+              <strong>Default Miner Address:</strong> {defaultMinerAddress}
+            </p>
+            <p className="lead">
+              <strong>Set yourself as the default miner?</strong>{" "}
+              {!walletAddress ? (
+                <Link href="/wallet">
+                  <a>Unlock Wallet</a>
+                </Link>
+              ) : (
+                <Button
+                  variant={`${
+                    defaultMinerAddress !== walletAddress
+                      ? "outline-primary"
+                      : "outline-danger"
+                  }`}
+                  onClick={changeDefaultMiner}
+                >
+                  {`${
+                    defaultMinerAddress !== walletAddress
+                      ? "Add Wallet"
+                      : "Remove Wallet"
+                  }`}
+                </Button>
+              )}
             </p>
           </div>
         </>

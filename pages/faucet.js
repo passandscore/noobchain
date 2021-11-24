@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/Wallet.module.css";
 import { useEffect, useState, useRef } from "react";
@@ -167,7 +168,9 @@ export default function Wallet() {
         sessionStorage.setItem("faucetTimer", timeStamp);
 
         // Mine the block
-        mineNextBlock();
+        if (_miningDetails.mode === "automatic") {
+          mineNextBlock();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -251,15 +254,19 @@ export default function Wallet() {
             </p>
 
             <p className="fs-5 m-0">
-              <a href="#" style={{ textDecoration: "none" }}>
-                {userAddress}
-              </a>
+              <Link href={`/explorer/addresses/${userAddress}`}>
+                <a href="#" style={{ textDecoration: "none" }}>
+                  {userAddress}
+                </a>
+              </Link>
             </p>
             <p className="fs-5">
               tx:{" "}
-              <a style={{ fontSize: "16px", textDecoration: "none" }} href="#">
-                {txHash}
-              </a>
+              <Link href={`/explorer/transactions/${txHash}`}>
+                <a style={{ fontSize: "16px", textDecoration: "none" }}>
+                  {txHash}
+                </a>
+              </Link>
             </p>
           </div>
         </Modal.Body>
@@ -286,9 +293,7 @@ export default function Wallet() {
         <div className="card">
           <div className="card-header d-flex justify-content-between">
             <div className="fs-5">NoobChain Faucet</div>
-            {/* <div className="pt-1" style={{ cursor: "pointer" }}>
-              Donate?
-            </div> */}
+
             <div ref={ref} style={{ marginRight: ".5rem" }}>
               <Button variant="outline-primary" onClick={handleDonateClick}>
                 Donate

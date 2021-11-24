@@ -91,7 +91,6 @@ app.post("/transaction", function (req, res) {
 app.post("/transaction/broadcast", function (req, res) {
   const newTransaction = noobchain.addTransaction(req.body);
   console.log(newTransaction);
-  return res.json(newTransaction);
   if (newTransaction.errorMsg) {
     res.json({ error: newTransaction.errorMsg });
     return;
