@@ -1,16 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
-import styles from "../../../styles/BlockExplorer.module.css";
+import styles from "../../../../../styles/BlockExplorer.module.css";
 import axios from "axios";
-import { useState } from "react";
-import SearchBar from "../../../Components/Explorer/SearchBar";
+import { useState, useEffect } from "react";
+import SearchBar from "../../../../../Components/Explorer/SearchBar";
 
 export const getStaticPaths = async () => {
-  const addressData = await axios.get(`http://localhost:3001/addresses`);
+  const blockData = await axios.get(`http://localhost:3001/blockchain`);
 
-  const paths = addressData.data.map((address) => ({
+  const paths = blockData.data.chain.map((block) => ({
     params: {
-      address: address,
+      block: block.blockHash.toString(),
     },
   }));
 
@@ -21,22 +21,27 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async (context) => {
-  const { address } = context.params;
-  const addressData = await axios.get(
-    `http://localhost:3001/address/${address}`
+  const { block } = context.params;
+  const transactionData = await axios.get(
+    `http://localhost:3001/block/${block}/transactions`
   );
   return {
     props: {
-      ...addressData.data,
-      address,
+      ...transactionData.data,
     },
   };
 };
 
-const AddressDetails = (props) => {
+const BlockTransactions = (props) => {
   const [search, setSearch] = useState(false);
+  const [blockValue, setBlockValue] = useState(0);
   console.log(props);
   const handleBlockchain = async () => {};
+
+  useEffect(() => {
+    let value = props.block.map((t) => t.value).reduce((a, b) => a + b);
+    setBlockValue(value);
+  }, []);
 
   return (
     <>
@@ -55,23 +60,16 @@ const AddressDetails = (props) => {
         <SearchBar handleSearch={handleBlockchain} />
         <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
-            <div className="card-header">Address: {props.address}</div>
+            <div className="card-header">
+              Transactions: {props.block.length}
+            </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
-                <p>Balance: {props.addressData.addressBalance} NOOB</p>
+                <p>Block Value: {blockValue} NOOB</p>
               </blockquote>
             </div>
           </div>
 
-          {/* <div className="">
-            <h4 className="display-5">
-              Address <span className="fs-3">{props.address}</span>{" "}
-            </h4>
-            <h4 className="display-6">
-              Balance
-              <span className="fs-3">{props.addressData.addressBalance}</span>
-            </h4>
-          </div> */}
           <table className="table">
             <thead>
               <tr>
@@ -86,8 +84,8 @@ const AddressDetails = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.addressData.transactions.length > 0 &&
-                props.addressData.transactions.reverse().map((d, index) => (
+              {props.block.length > 0 &&
+                props.block.reverse().map((d, index) => (
                   <>
                     <tr key={index}>
                       <td>
@@ -140,4 +138,4 @@ const AddressDetails = (props) => {
   );
 };
 
-export default AddressDetails;
+export default BlockTransactions;

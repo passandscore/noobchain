@@ -74,9 +74,13 @@ const LatestBlocks = ({ blocks }) => {
                         </a>
                       </div>
                       <div className="  text-secondary">
-                        <a href="#" className={styles.noDecor}>
-                          {`${block.transactionCount} txns`}
-                        </a>
+                        <Link
+                          href={`/explorer/blocks/${block.blockHash.toString()}/transactions`}
+                        >
+                          <a href="#" className={styles.noDecor}>
+                            {`${block.transactionCount} txns`}
+                          </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

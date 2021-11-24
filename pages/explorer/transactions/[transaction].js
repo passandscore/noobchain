@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -37,23 +38,38 @@ export const getStaticProps = async (context) => {
 const TransactionDetails = ({ transaction }) => {
   const [search, setSearch] = useState(true);
   const [trans, setTrans] = useState(transaction.transaction.transaction);
-  const [isSuccessful, setIsSuccessful] = useState("");
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (trans.transferSuccessful) {
-      setIsSuccessful("Success");
-    } else {
-      setIsSuccessful("Pending");
-    }
+    console.log(transaction);
     setData([
-      { name: "Transaction Hash:", value: `${trans.transactionDataHash}` },
-      { name: "Status:", value: `${isSuccessful}` },
-      { name: "Block:", value: `${trans.minedInBlockIndex}` },
-      { name: "Timestamp:", value: `${trans.dateCreated}` },
-      { name: "From:", value: `${trans.from}` },
-      { name: "To:", value: `${trans.to}` },
-      { name: "To:", value: `${trans.value}` },
+      {
+        name: "Transaction Hash:",
+        value: `${trans.transactionDataHash}`,
+      },
+      {
+        name: "Status:",
+        value: `${trans.transferSuccessful ? "Success" : "Pending"}`,
+      },
+      {
+        name: "Block:",
+        value: `${trans.minedInBlockIndex}`,
+      },
+      {
+        name: "Timestamp:",
+        value: `${trans.dateCreated}`,
+      },
+      {
+        name: "From:",
+        value: `${trans.from}`,
+        link: `/explorer/addresses/${trans.from}`,
+      },
+      {
+        name: "To:",
+        value: `${trans.to}`,
+        link: `/explorer/addresses/${trans.to}`,
+      },
+      { name: "Value:", value: `${trans.value}` },
       { name: "Transaction Fee:", value: `${trans.fee}` },
       { name: "Data:", value: `${trans.data}` },
     ]);
@@ -83,13 +99,16 @@ const TransactionDetails = ({ transaction }) => {
               <tbody>
                 {data &&
                   data.map((d, index) => (
-                    <>
-                      <tr key={index}>
-                        <td style={{ paddingRight: "10rem" }}> {d.name}</td>
-
+                    <tr key={index}>
+                      <td style={{ paddingRight: "10rem" }}> {d.name}</td>
+                      {d.link ? (
+                        <td>
+                          <Link href={`${d.link}`}>{d.value}</Link>
+                        </td>
+                      ) : (
                         <td>{d.value}</td>
-                      </tr>
-                    </>
+                      )}
+                    </tr>
                   ))}
               </tbody>
             </table>

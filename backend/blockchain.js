@@ -44,24 +44,7 @@ class Blockchain {
       tranData.senderSignature
     );
 
-    // Check for duplicated transactions (to avoid "replay attack")
-    // if (this.findTransactionByDataHash(tran.transactionDataHash))
-    //   return {
-    //     errorMsg: "Duplicated transaction: " + tran.transactionDataHash,
-    //   };
-
-    // if (!tran.verifySignature())
-    //   return { errorMsg: "Invalid signature: " + tranData.senderSignature };
-
-    // let balances = this.getAccountBalance(tran.from);
-    // if (balances.confirmedBalance < tran.value + tran.fee)
-    //   return {
-    //     errorMsg: "Unsufficient sender balance at address: " + tran.from,
-    //   };
-
     this.pendingTransactions.push(tran);
-    // logger.debug("Added pending transaction: " + JSON.stringify(tran));
-
     return tran;
   }
 
@@ -84,7 +67,7 @@ class Blockchain {
       return { errorMsg: "Invalid recipient address: " + tranData.to };
     if (!ValidationUtils.isValidPublicKey(tranData.senderPubKey))
       return { errorMsg: "Invalid public key: " + tranData.senderPubKey };
-    let senderAddr = CryptoUtils.publicKeyToAddress(tranData.senderPubKey);
+    // let senderAddr = CryptoUtils.publicKeyToAddress(tranData.senderPubKey);
     // if (senderAddr !== tranData.from)
     //   return { errorMsg: "The public key should match the sender address" };
     // if (!ValidationUtils.isValidTransferValue(tranData.value))
@@ -121,7 +104,10 @@ class Blockchain {
       return { errorMsg: "Invalid signature: " + tranData.senderSignature };
 
     let balances = this.getAccountBalance(tran.from);
-    if (balances.confirmedBalance < tran.value + tran.fee)
+    if (
+      Number(balances.confirmedBalance) <
+      Number(tran.value) + Number(tran.fee)
+    )
       return {
         errorMsg: "Unsufficient sender balance.",
       };
@@ -250,6 +236,21 @@ class Blockchain {
   }
 
   /**
+   * @notice - Returns the block with all transactions
+   * @param blockHash - The hash of the block to be returned
+   * @return - An oblect containing the block with all transactions
+   */
+  getBlockTransactions(blockHash) {
+    let correctBlock = null;
+    this.chain.forEach((block) => {
+      if (block.blockHash === blockHash) {
+        correctBlock = block.transactions;
+      }
+    });
+    return correctBlock;
+  }
+
+  /**
    * @notice - Searches the blockchain for a transaction with the given transaction data hash
    * @param transactionHash - The transaction data hash of the transaction to be returned
    * @return - An object containing the transaction details or undefined
@@ -331,7 +332,7 @@ class Blockchain {
       safeCount: config.safeConfirmCount,
     };
     for (let tran of transactions) {
-      // Determine the number of chain mined since the transaction was created
+      // Determine the number of blocks mined since the transaction was created
 
       let confimationCount = 0;
       if (typeof tran.minedInBlockIndex === "number") {
@@ -341,9 +342,10 @@ class Blockchain {
       // Calculate the address balance
       if (tran.from === address) {
         // Funds spent -> subtract value and fee (FROM)
-        if (!tran.transferSuccessful)
+        if (!tran.transferSuccessful) {
           balance.pendingBalance -= Number(tran.fee);
-        balance.pendingBalance -= Number(tran.value);
+          balance.pendingBalance -= Number(tran.value);
+        }
         if (confimationCount > 0) {
           balance.confirmedBalance -= Number(tran.fee);
           if (tran.transferSuccessful)
@@ -556,6 +558,7 @@ class Blockchain {
       this.currentDifficulty,
       prevBlockHash,
       minerAddress,
+      undefined,
       blockReward
     );
 
@@ -580,6 +583,9 @@ class Blockchain {
     newBlock.dateCreated = dateCreated;
     newBlock.nonce = nonce;
     newBlock.calculateBlockHash();
+
+    let blockReward = config.blockReward;
+    newBlock.blockReward = blockReward;
 
     // Validate the block hash + the proof of work
     if (newBlock.blockHash !== blockHash)

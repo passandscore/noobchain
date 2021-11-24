@@ -4,7 +4,7 @@ import { Modal, Button } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilValue } from "recoil";
-import { lockState, faucetDetails } from "../../recoil/atoms";
+import { lockState, faucetDetails, miningDetails } from "../../recoil/atoms";
 import hashes from "../../lib/hashes";
 import elliptic from "../../lib/elliptic";
 import { ToastContainer, toast } from "react-toastify";
@@ -15,7 +15,7 @@ export default function SendTransaction() {
   const [show, setShow] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [recipient, setRecipient] = useState("");
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(0);
   const [data, setData] = useState(null);
   const [signedTx, setSignedTx] = useState(null);
   const [txHash, setTxHash] = useState("");
@@ -25,6 +25,7 @@ export default function SendTransaction() {
 
   const walletStatus = useRecoilValue(lockState);
   const _faucetDetails = useRecoilValue(faucetDetails);
+  const _miningDetails = useRecoilValue(miningDetails);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const signRef = useRef("");
@@ -80,7 +81,7 @@ export default function SendTransaction() {
     let transaction = {
       from: sessionStorage["address"],
       to: recipient,
-      value,
+      value: Number(value),
       fee,
       dateCreated: new Date().toISOString(),
       data,
@@ -120,14 +121,12 @@ export default function SendTransaction() {
         },
       };
 
-      console.log(signedTx);
-      const result = await axios.post(
+      let result = await axios.post(
         `${nodeUrl}/transaction/broadcast`,
         signedTx,
         config
       );
 
-      console.log(result);
       const error = result.data.error;
 
       if (error) {
@@ -140,6 +139,33 @@ export default function SendTransaction() {
           position: "bottom-right",
           theme: "colored",
         });
+
+        // Check Miner Mode
+        if (_miningDetails.mode === "automatic") {
+          const body = {
+            minerAddress: _miningDetails.address,
+            difficulty: _miningDetails.difficulty,
+          };
+
+          const result = await axios.post(
+            "http://localhost:3001/mine-next-block",
+            body,
+            config
+          );
+          console.log(result.data);
+
+          if (error) {
+            toast.error(error, {
+              position: "bottom-right",
+              theme: "colored",
+            });
+          } else {
+            toast.success("Transaction successfully mined!", {
+              position: "bottom-right",
+              theme: "colored",
+            });
+          }
+        }
 
         //Remove faucet address from local storage if it exists
         if (recipient === _faucetDetails.address) {

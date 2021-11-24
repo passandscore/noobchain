@@ -91,6 +91,7 @@ app.post("/transaction", function (req, res) {
 app.post("/transaction/broadcast", function (req, res) {
   const newTransaction = noobchain.addTransaction(req.body);
   console.log(newTransaction);
+  return res.json(newTransaction);
   if (newTransaction.errorMsg) {
     res.json({ error: newTransaction.errorMsg });
     return;
@@ -370,6 +371,12 @@ app.get("/block/:blockHash", (req, res) => {
   const blockHash = req.params.blockHash;
   const correctBlock = noobchain.getBlock(blockHash);
   res.json({ block: correctBlock });
+});
+
+app.get("/block/:blockHash/transactions", (req, res) => {
+  const blockHash = req.params.blockHash;
+  const correctBlock = noobchain.getBlockTransactions(blockHash);
+  res.json({ trans: correctBlock });
 });
 
 app.get("/transaction/:transactionHash", (req, res) => {
