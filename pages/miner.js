@@ -39,8 +39,8 @@ export default function Miner() {
     { url: "http://localhost:3005", isMining: false },
   ]);
   const miningDifficultyRange = [
-    { name: "1", value: "1" },
-    { name: "2", value: "2" },
+    // { name: "1", value: "1" },
+    // { name: "2", value: "2" },
     { name: "3", value: "3" },
     { name: "4", value: "4" },
     { name: "5", value: "5" },

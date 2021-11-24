@@ -9,10 +9,8 @@ import LastestTransactions from "../../Components/Explorer/LastestTransactions";
 import AccountInfo from "../../Components/Wallet/AccountInfo";
 
 export default function Home() {
-  const [blockchain, setBlockchain] = useState(null);
   const [blocks, setblocks] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [search, setSearch] = useState(true);
 
   useEffect(() => {
     // All blockchain data is fetched from the node
@@ -60,7 +58,7 @@ export default function Home() {
           zIndex: "2",
         }}
       >
-        <SearchBar handleSearch={handleBlockchain} />
+        <SearchBar />
 
         <div className="row">
           <LatestBlocks blocks={blocks} />

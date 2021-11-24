@@ -33,7 +33,6 @@ export const getStaticProps = async (context) => {
 };
 
 const TransactionDetails = ({ transaction }) => {
-  const [search, setSearch] = useState(true);
   const [trans, setTrans] = useState(transaction.transaction.transaction);
   const [data, setData] = useState([]);
 
@@ -87,7 +86,7 @@ const TransactionDetails = ({ transaction }) => {
           zIndex: "2",
         }}
       >
-        <SearchBar handleSearch={handleBlockchain} />
+        <SearchBar />
         <div className="container" style={{ marginTop: "8rem" }}>
           <h4 className="display-5">Transaction Details</h4>
           <div className="container p-2 border rounded-3">

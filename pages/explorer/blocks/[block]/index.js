@@ -31,9 +31,6 @@ export const getStaticProps = async (context) => {
 };
 
 const BlockDetails = ({ block }) => {
-  const [search, setSearch] = useState(true);
-  // const [trans, setTrans] = useState(transaction.transaction.transaction);
-  // const [isSuccessful, setIsSuccessful] = useState("");
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -54,7 +51,6 @@ const BlockDetails = ({ block }) => {
       },
       { name: "BlockDataHash:", value: `${block.blockDataHash}` },
       { name: "Nonce:", value: `${block.nonce}` },
-      // { name: "Data:", value: `${trans.data}` },
     ]);
   }, []);
 
@@ -74,7 +70,7 @@ const BlockDetails = ({ block }) => {
           zIndex: "2",
         }}
       >
-        <SearchBar handleSearch={handleBlockchain} />
+        <SearchBar />
         <div className="container" style={{ marginTop: "8rem" }}>
           <h4 className="display-5">{`Block #${block.index}`}</h4>
           <div className="container p-2 border rounded-3">

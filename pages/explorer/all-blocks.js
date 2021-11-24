@@ -15,7 +15,6 @@ export const getStaticProps = async (context) => {
 };
 
 const AllBlocks = (props) => {
-  const [search, setSearch] = useState(false);
   const [chainValue, setChainValue] = useState(0);
   const [chain, setChain] = useState([]);
   const handleBlockchain = async () => {};
@@ -48,7 +47,7 @@ const AllBlocks = (props) => {
           zIndex: "2",
         }}
       >
-        <SearchBar handleSearch={handleBlockchain} />
+        <SearchBar />
         <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
             <div className="card-header">Transactions: {chain.length}</div>

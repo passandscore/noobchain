@@ -1,15 +1,44 @@
 import styles from "../../styles/BlockExplorer.module.css";
+import explorerSearch from "../../lib/explorerSearch.js";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
-const SearchBar = ({ handleSearch }) => {
+const SearchBar = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const search = () => {
+    const result = explorerSearch(searchQuery);
+    if (result) {
+      router.push(result);
+    } else {
+      toast.error("Query not found.", {
+        position: "bottom-right",
+        theme: "colored",
+      });
+      setSearchQuery("");
+    }
+  };
+
   return (
     <div className={styles.landingText}>
+      <ToastContainer position="top-center" pauseOnFocusLoss={false} />
+
       <label htmlFor="basic-url" className="text-white py-2 fs-5">
         Noobchain PoW Testnet Explorer
       </label>
       <div className="input-group mb-3" style={{ height: "25px" }}>
         <div className="input-group-prepend"></div>
+
         <input
           type="text"
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            console.log(e.target.value);
+          }}
+          value={searchQuery}
           className="form-control form-control-lg"
           style={{
             borderTopLeftRadius: "10px",
@@ -26,7 +55,7 @@ const SearchBar = ({ handleSearch }) => {
             borderBottomRightRadius: "10px",
             cursor: "pointer",
           }}
-          onClick={handleSearch}
+          onClick={search}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -20,16 +20,6 @@ export const address = atom({
   default: "",
 });
 
-export const miningMode = atom({
-  key: "miningMode",
-  default: "automatic",
-});
-
-export const miningDifficulty = atom({
-  key: "miningDifficulty",
-  default: "5",
-});
-
 export const miningDetails = atom({
   key: "miningDetails",
   default: {

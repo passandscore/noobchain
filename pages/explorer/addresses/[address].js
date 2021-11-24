@@ -34,9 +34,6 @@ export const getStaticProps = async (context) => {
 };
 
 const AddressDetails = (props) => {
-  const [search, setSearch] = useState(false);
-  const handleBlockchain = async () => {};
-
   return (
     <>
       <Head>
@@ -51,7 +48,7 @@ const AddressDetails = (props) => {
           zIndex: "2",
         }}
       >
-        <SearchBar handleSearch={handleBlockchain} />
+        <SearchBar />
         <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
             <div className="card-header">Address: {props.address}</div>
