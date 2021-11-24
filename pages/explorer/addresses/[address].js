@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import SearchBar from "../../../Components/Explorer/SearchBar";
@@ -34,6 +35,13 @@ export const getStaticProps = async (context) => {
 };
 
 const AddressDetails = (props) => {
+  const router = useRouter();
+
+  const getBlockHash = async (index) => {
+    let result = await axios.get(`http://localhost:3001/blockByIndex/${index}`);
+    router.push(`/explorer/blocks/${result.data.block.blockHash}`);
+  };
+
   return (
     <>
       <Head>
@@ -94,7 +102,18 @@ const AddressDetails = (props) => {
                           {`${d.transactionDataHash.slice(0, 20)}...`}
                         </Link>
                       </td>
-                      <td>{d.minedInBlockIndex}</td>
+                      <td
+                        onClick={() => {
+                          getBlockHash(d.minedInBlockIndex);
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          color: "blue",
+                        }}
+                      >
+                        {d.minedInBlockIndex}
+                      </td>
                       <td>
                         <Link href={`/explorer/addresses/${d.from.toString()}`}>
                           {`${d.from.slice(0, 20)}...`}
@@ -124,7 +143,7 @@ const AddressDetails = (props) => {
                           </Link>
                         </div>
                       </td>
-                      <td>{d.value}</td>
+                      <td>{d.value.toLocaleString("en-CA")}</td>
                       <td>{d.fee}</td>
                     </tr>
                   ))}

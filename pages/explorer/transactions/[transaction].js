@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -36,6 +37,7 @@ export const getStaticProps = async (context) => {
 const TransactionDetails = ({ transaction }) => {
   const [trans, setTrans] = useState(transaction.transaction.transaction);
   const [data, setData] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     setData([
@@ -66,12 +68,18 @@ const TransactionDetails = ({ transaction }) => {
         link: `/explorer/addresses/${trans.to}`,
       },
       { name: "Value:", value: `${trans.value}` },
-      { name: "Transaction Fee:", value: `${trans.fee}` },
+      {
+        name: "Transaction Fee:",
+        value: `${trans.fee}`,
+      },
       { name: "Data:", value: `${trans.data}` },
     ]);
   }, []);
 
-  const handleBlockchain = async () => {};
+  const getBlockHash = async (index) => {
+    let result = await axios.get(`http://localhost:3001/blockByIndex/${index}`);
+    router.push(`/explorer/blocks/${result.data.block.blockHash}`);
+  };
 
   return (
     <>
@@ -97,9 +105,23 @@ const TransactionDetails = ({ transaction }) => {
                   data.map((d, index) => (
                     <tr key={index}>
                       <td style={{ paddingRight: "10rem" }}> {d.name}</td>
+
                       {d.link ? (
                         <td>
                           <Link href={`${d.link}`}>{d.value}</Link>
+                        </td>
+                      ) : `${d.name}` === "Block:" ? (
+                        <td
+                          onClick={() => {
+                            getBlockHash(d.value);
+                          }}
+                          style={{
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            color: "blue",
+                          }}
+                        >
+                          {d.value}
                         </td>
                       ) : (
                         <td>{d.value}</td>

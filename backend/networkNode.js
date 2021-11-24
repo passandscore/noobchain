@@ -372,6 +372,12 @@ app.get("/block/:blockHash", (req, res) => {
   res.json({ block: correctBlock });
 });
 
+app.get("/blockByIndex/:index", (req, res) => {
+  const blockIndex = req.params.blockIndex;
+  const correctBlock = noobchain.getBlockByIndex(blockIndex);
+  res.json({ block: correctBlock });
+});
+
 app.get("/block/:blockHash/transactions", (req, res) => {
   const blockHash = req.params.blockHash;
   const correctBlock = noobchain.getBlockTransactions(blockHash);

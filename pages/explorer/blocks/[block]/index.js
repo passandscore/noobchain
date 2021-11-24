@@ -37,13 +37,20 @@ const BlockDetails = ({ block }) => {
     setData([
       { name: "Block Height:", value: block.index },
       { name: "Timestamp:", value: block.dateCreated },
-      { name: "Transactions:", value: `${block.transactions.length}` },
+      {
+        name: "Transactions:",
+        value: `${block.transactions.length}`,
+        link: `/explorer/blocks/${block.blockHash.toString()}/transactions`,
+      },
       {
         name: "Mined by:",
         value: `${block.minedBy}`,
         link: `/explorer/addresses/${block.minedBy}`,
       },
-      { name: "Block Reward:", value: `${block.blockReward}` },
+      {
+        name: "Block Reward:",
+        value: `${block.blockReward.toLocaleString("en-CA")}`,
+      },
       { name: "Difficulty:", value: `${block.difficulty}` },
       {
         name: "Block Hash:",
@@ -51,10 +58,9 @@ const BlockDetails = ({ block }) => {
       },
       { name: "BlockDataHash:", value: `${block.blockDataHash}` },
       { name: "Nonce:", value: `${block.nonce}` },
+      { name: "Data:", value: `${block.data}` },
     ]);
   }, []);
-
-  const handleBlockchain = async () => {};
 
   return (
     <>

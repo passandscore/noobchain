@@ -88,7 +88,7 @@ const LatestBlocks = ({ blocks }) => {
                   <div className="col-md-3">
                     <div className=" ">
                       <div className="  d-flex justify-content-end ">
-                        {`${block.value} NOOB`}
+                        {`${block.value.toLocaleString("en-CA")} NOOB`}
                       </div>
                       <div></div>
                     </div>

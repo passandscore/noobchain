@@ -249,8 +249,11 @@ export default function Wallet() {
           {/* Results */}
           <div className="text-center">
             <p className="fs-5 m-0">
-              We sent <span className="fs-3 text-success">{value}</span> coins
-              to address
+              We sent{" "}
+              <span className="fs-3 text-success">
+                {value.toLocaleString("en-CA")}
+              </span>{" "}
+              coins to address
             </p>
 
             <p className="fs-5 m-0">

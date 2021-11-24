@@ -1,10 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
-import styles from "../../../styles/BlockExplorer.module.css";
+import styles from "../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import SearchBar from "../../../Components/Explorer/SearchBar";
-import AccountInfo from "../../../Components/Wallet/AccountInfo";
+import SearchBar from "../../Components/Explorer/SearchBar";
+import AccountInfo from "../../Components/Wallet/AccountInfo";
 
 export const getStaticProps = async () => {
   const transactionData = await axios.get(
@@ -135,7 +135,7 @@ const AllTransactions = (props) => {
                             </Link>
                           </div>
                         </td>
-                        <td>{d.value}</td>
+                        <td>{d.value.toLocaleString("en-CA")}</td>
                         <td>{d.fee}</td>
                       </tr>
                     </Link>

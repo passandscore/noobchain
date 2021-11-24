@@ -36,7 +36,8 @@ const BlockTransactions = (props) => {
   const [blockValue, setBlockValue] = useState(0);
 
   useEffect(() => {
-    let value = props.block.map((t) => t.value).reduce((a, b) => a + b);
+    console.log(props);
+    let value = props.trans.map((t) => t.value).reduce((a, b) => a + b);
     setBlockValue(value);
   }, []);
 
@@ -58,11 +59,11 @@ const BlockTransactions = (props) => {
         <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
             <div className="card-header">
-              Transactions: {props.block.length}
+              {`Block ${props.trans[0].minedInBlockIndex} contains ${props.trans.length} transactions.`}
             </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
-                <p>Block Value: {blockValue} NOOB</p>
+                <p>Block Value: {blockValue.toLocaleString("en-CA")} NOOB</p>
               </blockquote>
             </div>
           </div>
@@ -71,7 +72,6 @@ const BlockTransactions = (props) => {
             <thead>
               <tr>
                 <th scope="col">Txn Hash</th>
-                <th scope="col">Block</th>
                 <th scope="col">From</th>
                 <th scope="col" style={{ paddingLeft: "3rem" }}>
                   To
@@ -81,8 +81,8 @@ const BlockTransactions = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.block.length > 0 &&
-                props.block.reverse().map((d, index) => (
+              {props.trans.length > 0 &&
+                props.trans.reverse().map((d, index) => (
                   <tr key={index}>
                     <td>
                       <Link
@@ -91,7 +91,7 @@ const BlockTransactions = (props) => {
                         {`${d.transactionDataHash.slice(0, 20)}...`}
                       </Link>
                     </td>
-                    <td>{d.minedInBlockIndex}</td>
+
                     <td>
                       <Link href={`/explorer/addresses/${d.from.toString()}`}>
                         {`${d.from.slice(0, 20)}...`}
@@ -121,7 +121,7 @@ const BlockTransactions = (props) => {
                         </Link>
                       </div>
                     </td>
-                    <td>{d.value}</td>
+                    <td>{d.value.toLocaleString("en-CA")}</td>
                     <td>{d.fee}</td>
                   </tr>
                 ))}

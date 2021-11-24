@@ -96,7 +96,7 @@ const LastestTransactions = ({ transactions }) => {
                   <div className="col-md-3">
                     <div className=" ">
                       <div className="  d-flex justify-content-end ">
-                        {`${tran.value} NOOB`}
+                        {`${tran.value.toLocaleString("en-CA")} NOOB`}
                       </div>
                       <div></div>
                     </div>
@@ -107,7 +107,7 @@ const LastestTransactions = ({ transactions }) => {
               </div>
             ))}
         </div>
-        <Link href="/explorer/transactions" passHref={true}>
+        <Link href="/explorer/all-transactions" passHref={true}>
           <div
             className="card-footer  bg-primary  text-light  font-weight-bold text-center"
             style={{

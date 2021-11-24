@@ -236,6 +236,21 @@ class Blockchain {
   }
 
   /**
+   * @notice - Returns the block with the given index
+   * @param blockIndex - The index of the block to be returned
+   * @return - The block with the given hash
+   */
+  getBlockByIndex(blockIndex) {
+    let correctBlock = null;
+    this.chain.forEach((block) => {
+      if (block.blockIndex === blockIndex) {
+        correctBlock = block;
+      }
+    });
+    return correctBlock;
+  }
+
+  /**
    * @notice - Returns the block with all transactions
    * @param blockHash - The hash of the block to be returned
    * @return - An oblect containing the block with all transactions

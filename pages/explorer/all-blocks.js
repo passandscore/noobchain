@@ -17,7 +17,6 @@ export const getStaticProps = async (context) => {
 
 const AllBlocks = (props) => {
   const [chainValue, setChainValue] = useState(0);
-  const [chain, setChain] = useState([]);
 
   useEffect(() => {
     // calculate block value
@@ -28,9 +27,6 @@ const AllBlocks = (props) => {
       .reduce((a, b) => a + b);
 
     setChainValue(value);
-
-    //construct chain stucture
-    setChain(Object.values(props.chain));
   }, []);
 
   return (
@@ -53,7 +49,9 @@ const AllBlocks = (props) => {
           style={{ marginTop: "8rem", height: "24rem" }}
         >
           <div className="card">
-            <div className="card-header">Transactions: {chain.length}</div>
+            <div className="card-header">
+              Transactions: {props.chain.length}
+            </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
                 <p>Block Value: {chainValue.toLocaleString("en-CA")} NOOB</p>
@@ -77,8 +75,8 @@ const AllBlocks = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {chain.length > 0 &&
-                  chain.reverse().map((d, index) => (
+                {props.chain.length > 0 &&
+                  props.chain.map((d, index) => (
                     <Link
                       href={`/explorer/blocks/${d.blockHash.toString()}/transactions`}
                       passHref={true}
@@ -113,7 +111,6 @@ const AllBlocks = (props) => {
                         </td>
                         <td>{d.difficulty}</td>
                         <td>{d.blockReward}</td>
-                        <td>{d.value}</td>
                         <td>{d.fee}</td>
                       </tr>
                     </Link>
