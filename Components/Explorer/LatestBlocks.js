@@ -98,16 +98,18 @@ const LatestBlocks = ({ blocks }) => {
               </div>
             ))}
         </div>
-        <div
-          className="card-footer  bg-primary  text-light  font-weight-bold text-center"
-          style={{
-            borderBottomLeftRadius: "10px",
-            borderBottomRightRadius: "10px",
-            cursor: "pointer",
-          }}
-        >
-          View all Blocks
-        </div>
+        <Link href="/explorer/all-blocks" passHref={true}>
+          <div
+            className="card-footer  bg-primary  text-light  font-weight-bold text-center"
+            style={{
+              borderBottomLeftRadius: "10px",
+              borderBottomRightRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            View all Blocks
+          </div>
+        </Link>
       </div>
     </div>
   );

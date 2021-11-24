@@ -35,7 +35,6 @@ export const getStaticProps = async (context) => {
 
 const AddressDetails = (props) => {
   const [search, setSearch] = useState(false);
-  console.log(props);
   const handleBlockchain = async () => {};
 
   return (
@@ -58,7 +57,11 @@ const AddressDetails = (props) => {
             <div className="card-header">Address: {props.address}</div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
-                <p>Balance: {props.addressData.addressBalance} NOOB</p>
+                <p>
+                  Balance:{" "}
+                  {props.addressData.addressBalance.toLocaleString("en-CA")}{" "}
+                  NOOB
+                </p>
               </blockquote>
             </div>
           </div>

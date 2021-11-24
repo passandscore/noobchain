@@ -8,8 +8,6 @@ import SearchBar from "../../../Components/Explorer/SearchBar";
 export const getStaticPaths = async () => {
   const tranData = await axios.get(`http://localhost:3001/all-transactions`);
 
-  console.log(tranData.data);
-
   const paths = tranData.data.map((tran) => ({
     params: {
       transaction: tran.transactionDataHash,
@@ -23,7 +21,6 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async (context) => {
-  console.log(context.params);
   const { transaction } = context.params;
   const tranData = await axios.get(
     `http://localhost:3001/transaction/${transaction}`
@@ -41,7 +38,6 @@ const TransactionDetails = ({ transaction }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    console.log(transaction);
     setData([
       {
         name: "Transaction Hash:",

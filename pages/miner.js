@@ -52,7 +52,6 @@ export default function Miner() {
   ];
 
   useEffect(() => {
-    console.log(_miningDetails);
     setRadioValue(_miningDetails.difficulty);
   }, []);
 
@@ -81,7 +80,6 @@ export default function Miner() {
       (transaction) => transaction.transferSuccessful !== true
     ).length;
 
-    console.log("pending: " + pendingTransactions);
     if (pendingTransactions === 0) {
       toast.error("There are no pending transactions to mine.", {
         position: "bottom-right",
@@ -126,7 +124,6 @@ export default function Miner() {
       config
     );
 
-    console.log(miningResult.data);
     const result = miningResult.data.message;
 
     if (miningResult) {

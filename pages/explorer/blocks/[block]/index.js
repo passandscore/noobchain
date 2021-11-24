@@ -37,7 +37,6 @@ const BlockDetails = ({ block }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    console.log(block);
     setData([
       { name: "Block Height:", value: block.index },
       { name: "Timestamp:", value: block.dateCreated },
@@ -57,7 +56,6 @@ const BlockDetails = ({ block }) => {
       { name: "Nonce:", value: `${block.nonce}` },
       // { name: "Data:", value: `${trans.data}` },
     ]);
-    console.log(block);
   }, []);
 
   const handleBlockchain = async () => {};

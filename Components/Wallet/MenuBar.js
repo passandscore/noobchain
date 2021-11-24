@@ -8,7 +8,6 @@ const Navbar = () => {
   const resetLockState = useResetRecoilState(address);
 
   const handleLogout = () => {
-    console.log(walletStatus);
     sessionStorage.removeItem("privKey");
     sessionStorage.removeItem("pubKey");
     sessionStorage.removeItem("address");

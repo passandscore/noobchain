@@ -8,7 +8,6 @@ const LastestTransactions = ({ transactions }) => {
     return `${start}...${end}`;
   };
 
-  console.log(transactions);
   return (
     <div className="col-lg-6">
       <div

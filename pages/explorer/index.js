@@ -19,7 +19,6 @@ export default function Home() {
 
     (async function loadBlockchain() {
       const blockdata = await axios.get(`http://localhost:3001/blockchain`);
-      console.log(blockdata.data);
       // setBlockchain(chain.data.chain);
       let lastestBlocks = [];
       // Construct lastest blocks
@@ -38,7 +37,6 @@ export default function Home() {
 
       // Construct transactions
       const trans = await axios.get(`http://localhost:3001/all-transactions`);
-      console.log(trans);
       if (trans.data.length > 0) {
         setTransactions(trans.data.reverse().slice(0, 10));
       }
@@ -46,18 +44,6 @@ export default function Home() {
   }, []);
 
   const handleBlockchain = async () => {};
-
-  // const handleShow = () => {
-  //   const txHash = _explorerDetails.transaction;
-  //   console.log(txHash);
-  //   axios.get(`http://localhost:3001/transaction/${txHash}`).then((res) => {
-  //     console.log(res.data);
-  //     if (res.data.length > 0) {
-  //       setTransactions(res.data.reverse().slice(0, 10));
-  //     }
-  //   });
-  //   setShow(true);
-  // };
 
   return (
     <>

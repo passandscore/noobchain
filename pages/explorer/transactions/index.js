@@ -54,12 +54,12 @@ const AllTransactions = (props) => {
             </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
-                <p>Total Value: {totalValue} NOOB</p>
+                <p>Total Value: {totalValue.toLocaleString("en-CA")} NOOB</p>
               </blockquote>
             </div>
           </div>
 
-          <table className="table">
+          <table className="table table-hover">
             <thead>
               <tr>
                 <th scope="col">Txn Hash</th>
@@ -75,47 +75,53 @@ const AllTransactions = (props) => {
             <tbody>
               {allTransactions.length > 0 &&
                 allTransactions.reverse().map((d, index) => (
-                  <tr key={index}>
-                    <td>
-                      <Link
-                        href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
-                      >
-                        {`${d.transactionDataHash.slice(0, 20)}...`}
-                      </Link>
-                    </td>
-                    <td>{d.minedInBlockIndex}</td>
-                    <td>
-                      <Link href={`/explorer/addresses/${d.from.toString()}`}>
-                        {`${d.from.slice(0, 20)}...`}
-                      </Link>
-                    </td>
-                    <td>
-                      <div className="d-flex">
-                        <button
-                          type="button"
-                          className={`${
-                            d.from === props.address
-                              ? "btn btn-sm btn-warning"
-                              : "btn btn-sm btn-success"
-                          }`}
-                          style={{
-                            fontSize: "0.7rem",
-                            marginRight: "0.5rem",
-                            padding: "0.2rem",
-                            width: "2rem",
-                            borderRadius: "0.5rem",
-                          }}
+                  <Link
+                    href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
+                    key={index}
+                    passHref={true}
+                  >
+                    <tr style={{ cursor: "pointer" }}>
+                      <td>
+                        <Link
+                          href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
                         >
-                          {`${d.from === props.address ? "OUT" : "IN"}`}
-                        </button>
-                        <Link href={`/explorer/addresses/${d.to.toString()}`}>
-                          {`${d.to.slice(0, 20)}...`}
+                          {`${d.transactionDataHash.slice(0, 20)}...`}
                         </Link>
-                      </div>
-                    </td>
-                    <td>{d.value}</td>
-                    <td>{d.fee}</td>
-                  </tr>
+                      </td>
+                      <td>{d.minedInBlockIndex}</td>
+                      <td>
+                        <Link href={`/explorer/addresses/${d.from.toString()}`}>
+                          {`${d.from.slice(0, 20)}...`}
+                        </Link>
+                      </td>
+                      <td>
+                        <div className="d-flex">
+                          <button
+                            type="button"
+                            className={`${
+                              d.from === props.address
+                                ? "btn btn-sm btn-warning"
+                                : "btn btn-sm btn-success"
+                            }`}
+                            style={{
+                              fontSize: "0.7rem",
+                              marginRight: "0.5rem",
+                              padding: "0.2rem",
+                              width: "2rem",
+                              borderRadius: "0.5rem",
+                            }}
+                          >
+                            {`${d.from === props.address ? "OUT" : "IN"}`}
+                          </button>
+                          <Link href={`/explorer/addresses/${d.to.toString()}`}>
+                            {`${d.to.slice(0, 20)}...`}
+                          </Link>
+                        </div>
+                      </td>
+                      <td>{d.value}</td>
+                      <td>{d.fee}</td>
+                    </tr>
+                  </Link>
                 ))}
             </tbody>
           </table>
