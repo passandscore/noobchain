@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import { Modal, Button } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
@@ -142,7 +143,7 @@ export default function SendTransaction() {
           theme: "colored",
         });
       } else {
-        toast.success("Transaction successfully sent!", {
+        toast.success("Transaction received & pending", {
           position: "bottom-right",
           theme: "colored",
         });
@@ -363,11 +364,13 @@ export default function SendTransaction() {
         </form>
       </div>
 
-      {successTx && (
+      {_miningDetails.mode === "automatic" && (
         <div className="d-flex justify-content-center">
-          <button type="button" className="btn btn-primary my-2 w-50">
-            View Details on Noob Explorer
-          </button>
+          <Link href={`/explorer/transactions/${txHash}`} passHref={true}>
+            <button type="button" className="btn btn-primary my-2 w-50">
+              View Details on Noob Explorer
+            </button>
+          </Link>
         </div>
       )}
 

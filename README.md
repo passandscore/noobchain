@@ -112,7 +112,8 @@ npm run noobchain
 - Validates Transactions.
 - Multiple node synchronization.
 - Block Validations.
-- Mining Jobs
+- Mining Jobs.
+- Consensus Verification.
 
 ---
 

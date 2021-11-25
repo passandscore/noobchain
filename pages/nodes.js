@@ -51,9 +51,11 @@ export default function Nodes() {
         theme: "colored",
       });
 
+      // Run Consensus on current node. Check if node has current chain data.
+      await handleConsensus(nodeUrl);
+
       //Update the status of the node on the view
       if (!currentNodes.includes(nodeUrl)) {
-        console.log("Node not in array");
         setCurrentNodes([...currentNodes, nodeUrl]);
       }
     } else {
@@ -122,6 +124,20 @@ export default function Nodes() {
     setNodeInfo(result.data);
     handleShow();
   };
+
+  const handleConsensus = async (nodeUrl) => {
+    // Run Consensus on current node. Check if node has current chain data.
+    const consensusResult = await axios.get(`${nodeUrl}/consensus`);
+
+    const conResult = consensusResult.data.message;
+    if (conResult) {
+      toast.info(conResult, {
+        position: "bottom-right",
+        theme: "colored",
+      });
+    }
+  };
+
   return (
     <>
       <Head>
@@ -146,12 +162,16 @@ export default function Nodes() {
                 <td>{nodeInfo.blocks}</td>
               </tr>
               <tr>
-                <th scope="row">Difficulty</th>
-                <td>{nodeInfo.difficulty}</td>
+                <th scope="row">Chain Id</th>
+                <td>{nodeInfo.chainId}</td>
               </tr>
               <tr>
                 <th scope="row">Peers</th>
                 <td>{nodeInfo.peers}</td>
+              </tr>
+              <tr>
+                <th scope="row">Confirmed Transactions</th>
+                <td>{nodeInfo.confirmedTransactions}</td>
               </tr>
               <tr>
                 <th scope="row">Pending Transactions</th>
@@ -168,19 +188,19 @@ export default function Nodes() {
       ></div>
 
       {/* Select Default Node */}
-      <div className="container mt-5" style={{ width: "60rem" }}>
+      <div className="container mt-4" style={{ width: "80rem" }}>
         <div className="jumbotron">
           <h1 className="display-4">Hello, Noob!</h1>
           <p className="lead">
             Noobchain is a peer-to-peer blockchain network that enables the use
             of a decentralized ledger to store, share, and verify information.
           </p>
-          <hr className="my-4" />
+          <hr className="my-2" />
           <p className="lead">
             Select your default node to be used for all transactions.
           </p>
           {/* Select Node Url */}
-          <div className="input-group mb-3 p-2">
+          <div className="input-group mb-2 p-2">
             <div className="input-group-prepend">
               <label className="input-group-text" htmlFor="inputGroupSelect01">
                 Node Url
@@ -206,8 +226,11 @@ export default function Nodes() {
       </div>
 
       {/* Add Node to Network */}
-      <div className="container w-75 d-flex justify-content-center">
-        <table className="table" style={{ maxWidth: "60rem" }}>
+      <div className="container w-85 d-flex justify-content-center">
+        <table
+          className="table"
+          style={{ maxWidth: "80rem", marginBottom: "5rem" }}
+        >
           <thead>
             <tr>
               <th scope="col" className="text-center">
@@ -221,6 +244,9 @@ export default function Nodes() {
               </th>
               <th scope="col" className="text-center">
                 Action
+              </th>
+              <th scope="col" className="text-center">
+                Consensus
               </th>
             </tr>
           </thead>
@@ -247,60 +273,91 @@ export default function Nodes() {
               </td>
               <td className="text-center">Online</td>
               <td className="justify-content-center d-flex">Always On</td>
+              <td className="text-center">
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm px-4"
+                  onClick={() => {
+                    handleConsensus("http://localhost:3001");
+                  }}
+                >
+                  Verify
+                </button>
+              </td>
             </tr>
 
             {allNodes.map((node, index) => (
               <tr key={index}>
-                <td className="text-center">
-                  <Link href="">
-                    <a
-                      onClick={() => {
-                        handleClick(node);
-                      }}
-                    >
-                      Node {index + 2}
-                    </a>
-                  </Link>
-                </td>
-                <td className="text-center">
-                  <Link href={`${node}/blockchain`}>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "blue" }}
-                    >
-                      {node}
-                    </a>
-                  </Link>
-                </td>
-                <td className="text-center">
-                  {currentNodes.includes(node) ? "Online" : "-"}
-                </td>
-                <td className="justify-content-center d-flex">
-                  {!currentNodes.includes(node) ? (
-                    <button
-                      type="button"
-                      className="btn btn-success btn-sm px-4"
-                      value={node}
-                      onClick={(e) => {
-                        addNode(e.target.value);
-                      }}
-                    >
-                      Start
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm mx-2 px-4"
-                      value={node}
-                      onClick={(e) => {
-                        removeNode(e.target.value);
-                      }}
-                    >
-                      Stop
-                    </button>
-                  )}
-                </td>
+                {currentNodes.includes(node) ? (
+                  <>
+                    <td className="text-center">
+                      <Link href="">
+                        <a
+                          onClick={() => {
+                            handleClick(node);
+                          }}
+                        >
+                          Node {index + 2}
+                        </a>
+                      </Link>
+                    </td>
+                    <td className="text-center">
+                      <Link href={`${node}/blockchain`}>
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "blue" }}
+                        >
+                          {node}
+                        </a>
+                      </Link>
+                    </td>
+                    <td className="text-center">Online</td>
+                    <td className="justify-content-center d-flex">
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm mx-2 px-4"
+                        value={node}
+                        onClick={(e) => {
+                          removeNode(e.target.value);
+                        }}
+                      >
+                        Stop
+                      </button>
+                    </td>
+                    <td className="text-center">
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm px-4"
+                        value={node}
+                        onClick={() => {
+                          handleConsensus(node);
+                        }}
+                      >
+                        Verify
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="text-center">Node {index + 2}</td>
+                    <td className="text-center">{node}</td>
+                    <td className="text-center">-</td>
+                    <td className="justify-content-center d-flex">
+                      <button
+                        type="button"
+                        className="btn btn-success btn-sm px-4"
+                        value={node}
+                        onClick={(e) => {
+                          addNode(e.target.value);
+                        }}
+                      >
+                        Start
+                      </button>
+                    </td>
+                    <td className="text-center"> - </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

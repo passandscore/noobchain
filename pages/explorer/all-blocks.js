@@ -76,7 +76,7 @@ const AllBlocks = (props) => {
               </thead>
               <tbody>
                 {props.chain.length > 0 &&
-                  props.chain.map((d, index) => (
+                  props.chain.reverse().map((d, index) => (
                     <Link
                       href={`/explorer/blocks/${d.blockHash.toString()}/transactions`}
                       passHref={true}

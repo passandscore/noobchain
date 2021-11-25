@@ -77,6 +77,7 @@ const TransactionDetails = ({ transaction }) => {
   }, []);
 
   const getBlockHash = async (index) => {
+    if (index === "undefined") return;
     let result = await axios.get(`http://localhost:3001/blockByIndex/${index}`);
     router.push(`/explorer/blocks/${result.data.block.blockHash}`);
   };
@@ -121,7 +122,9 @@ const TransactionDetails = ({ transaction }) => {
                             color: "blue",
                           }}
                         >
-                          {d.value}
+                          {d.value == "undefined"
+                            ? "Waiting to be mined"
+                            : d.value}
                         </td>
                       ) : (
                         <td>{d.value}</td>

@@ -153,7 +153,7 @@ export default function Wallet() {
           theme: "colored",
         });
       } else {
-        toast.success("Transaction successfully sent!", {
+        toast.success("Transaction received & pending", {
           position: "bottom-right",
           theme: "colored",
         });
@@ -166,6 +166,9 @@ export default function Wallet() {
         const time = now.getTime() + Number(_faucetDetails.duration);
         const timeStamp = Math.floor(time / 1000);
         sessionStorage.setItem("faucetTimer", timeStamp);
+
+        // Display the transaction Receipt
+        handleShow();
 
         // Mine the block
         if (_miningDetails.mode === "automatic") {
@@ -204,9 +207,6 @@ export default function Wallet() {
 
     const result = miningResult.data.message;
     setIsMining(false);
-
-    // Display the transaction Receipt
-    handleShow();
 
     if (result) {
       toast.success(result, {
