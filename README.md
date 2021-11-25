@@ -1,34 +1,135 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Noobchain
 
-## Getting Started
+<p align="center">
+  <a ><img  src="public/images/readme/homepage.png" alt="homepage"></a></p>
+</p>
 
-First, run the development server:
+## About The Project
 
-```bash
-npm run dev
-# or
-yarn dev
+Implemented a blockchain architecture complete with nodes, wallet, faucet, miner & block explorer.
+
+## What I learned
+
+Where do I start! This was a great project. I was able to implement all my knowledge into one application. Understanding how data flows to and from the blockchain
+was incredibly informative. Every aspect of this project helped to further solidify my blockchain knowledge.
+
+## Installation
+
+**You will be up and running in 2 simple steps**
+
+```sh
+// Step 1
+npm install -g nodemon (Mac users prefix w/ sudo)
+
+// Step 2
+npm run noobchain
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Languages
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+- [JavaScript](https://www.javascript.com/)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Built With
 
-## Learn More
+- [Next.js](https://nextjs.org/)
+- [Bootstrap](https://getbootstrap.com/)
+- [React Bootstrap](https://react-bootstrap.github.io/)
+- [Recoil](https://yarnpkg.com/package/recoil)
+- [Express](https://yarnpkg.com/package/express)
 
-To learn more about Next.js, take a look at the following resources:
+### Recommended Dependanices
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Concurrently](https://yarnpkg.com/package/concurrently)
+- [React Toastify](https://github.com/fkhadra/react-toastify#readme)
+- [Crypto-js](https://yarnpkg.com/package/crypto-js)
+- [Elliptic](https://yarnpkg.com/package/elliptic)
+- [Request-Promise](https://yarnpkg.com/package/request-promise)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 1. Wallet
+
+<p align="center">
+  <a ><img  src="public/images/readme/wallet.png" alt="wallet"></a></p>
+</p>
+
+#### Functionality
+
+- Wallet key & address derivation.
+- Wallet transaction sign & send
+- Secure inital seed derivation
+- Check balances
+- Use a private key to restore the wallet.
+
+---
+
+### 2. Faucet
+
+<p align="center">
+  <a ><img  src="public/images/readme/faucet.png" alt="faucet"></a></p>
+</p>
+
+#### Functionality
+
+- Coin request limit is set to 5,000 NOOBS
+- Additional coins can be requested after a 90 second delay.
+- Donate button lets you send coins back to the faucet
+- The total balnce of the faucet is displayed at all times.
+
+---
+
+### 3. Block Explorer
+
+<p align="center">
+  <a ><img  src="public/images/readme/explorer.png" alt="explorer"></a></p>
+</p>
+
+#### Functionality
+
+- Displays home page with lastest blocks & transactions.
+- Displays block information.
+- Displays transaction information. (Pending & Confirmed).
+- Displays transaction history of addresses.
+- Search bar for quick access to information.
+
+---
+
+### 4. Nodes
+
+<p align="center">
+  <a ><img  src="public/images/readme/nodes.png" alt="nodes"></a></p>
+</p>
+
+#### Functionality
+
+- REST API.
+- Validates Transactions.
+- Multiple node synchronization.
+- Block Validations.
+- Mining Jobs
+
+---
+
+### 5. Miner
+
+<p align="center">
+  <a ><img  src="public/images/readme/miner.png" alt="miner"></a></p>
+</p>
+
+#### Functionality
+
+- Manual & automatic modes.
+- Sync miner to their connected wallet.
+- Only mines if pending transactions are present.
+
+---
+
+## Created By
+
+- [Jason Schwarz | LinkedIn](https://www.linkedin.com/in/jason-schwarz-75b91482/)
