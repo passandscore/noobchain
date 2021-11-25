@@ -1,7 +1,7 @@
 # Noobchain
 
 <p align="center">
-  <a ><img  src="public/images/readme/homepage.png" alt="homepage"></a></p>
+  <a ><img  src="public/readme/homepage.png" alt="homepage"></a></p>
 </p>
 
 ## About The Project
@@ -56,7 +56,7 @@ npm run noobchain
 ### 1. Wallet
 
 <p align="center">
-  <a ><img  src="public/images/readme/wallet.png" alt="wallet"></a></p>
+  <a ><img  src="public/readme/wallet.png" alt="wallet"></a></p>
 </p>
 
 #### Functionality
@@ -72,7 +72,7 @@ npm run noobchain
 ### 2. Faucet
 
 <p align="center">
-  <a ><img  src="public/images/readme/faucet.png" alt="faucet"></a></p>
+  <a ><img  src="public/readme/faucet.png" alt="faucet"></a></p>
 </p>
 
 #### Functionality
@@ -87,7 +87,7 @@ npm run noobchain
 ### 3. Block Explorer
 
 <p align="center">
-  <a ><img  src="public/images/readme/explorer.png" alt="explorer"></a></p>
+  <a ><img  src="public/readme/explorer.png" alt="explorer"></a></p>
 </p>
 
 #### Functionality
@@ -103,7 +103,7 @@ npm run noobchain
 ### 4. Nodes
 
 <p align="center">
-  <a ><img  src="public/images/readme/nodes.png" alt="nodes"></a></p>
+  <a ><img  src="public/readme/nodes.png" alt="nodes"></a></p>
 </p>
 
 #### Functionality
@@ -119,7 +119,7 @@ npm run noobchain
 ### 5. Miner
 
 <p align="center">
-  <a ><img  src="public/images/readme/miner.png" alt="miner"></a></p>
+  <a ><img  src="public/readme/miner.png" alt="miner"></a></p>
 </p>
 
 #### Functionality
