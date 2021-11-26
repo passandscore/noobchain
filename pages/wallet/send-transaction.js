@@ -142,6 +142,7 @@ export default function SendTransaction() {
           theme: "colored",
         });
       } else {
+        setSuccessTx(true);
         toast.success("Transaction received & pending", {
           position: "bottom-right",
           theme: "colored",
@@ -190,7 +191,6 @@ export default function SendTransaction() {
         setIsSigned(false);
         setShow(false);
         setTxHash(result.data.transactionDataHash);
-        setSuccessTx(true);
       }
     } catch (error) {
       console.log(error);
@@ -362,7 +362,7 @@ export default function SendTransaction() {
           </div>
         </form>
 
-        {signedTx && (
+        {successTx && (
           <div className="d-flex justify-content-center">
             <Link href={`/explorer/transactions/${txHash}`} passHref={true}>
               <button type="button" className="btn btn-primary my-2 w-50">

@@ -27,7 +27,7 @@ const AllPendingTransactions = (props) => {
     setAllPendingTransactions(transactionData.reverse());
 
     // calculate the total value of all transactions
-    if (allPendingTransactions.length > 0) {
+    if (transactionData.length > 0) {
       let value = transactionData.map((t) => t.value).reduce((a, b) => a + b);
       setTotalValue(value);
     }

@@ -15,7 +15,7 @@ was incredibly informative. Every aspect of this project helped to further solid
 
 ## Installation
 
-**You will be up and running in 2 simple steps**
+**You will be up and running in 3 simple steps**
 
 ```sh
 // Step 1
@@ -23,6 +23,9 @@ npm install -g nodemon (Mac users prefix w/ sudo)
 
 // Step 2
 npm run noobchain
+
+// Step 3
+Open your browser and go to http://localhost:3000/
 ```
 
 ---

@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.json";
 import Navbar from "./Navbar";
 import UserDetails from "../Components/UserDetails";
+import Footer from "./Footer";
 
 const Layout = ({ children }) => {
   return (
@@ -19,6 +20,7 @@ const Layout = ({ children }) => {
         <div>{children}</div>
       </div>
       <UserDetails placement={"bottom"} />
+      <Footer />
     </>
   );
 };
