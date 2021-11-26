@@ -1,9 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilValue } from "recoil";
 import { lockState } from "../../recoil/atoms";
 
@@ -17,7 +15,7 @@ export default function Wallet() {
       </Head>
 
       <MenuBar />
-      <div className="container" style={{ marginTop: "10rem" }}>
+      <div className="container" style={{ marginTop: "12rem" }}>
         <div className="jumbotron">
           <div className="container text-center text-lg-left">
             <div className="row">
@@ -29,7 +27,7 @@ export default function Wallet() {
                   access your wallet at any time with your private key. It can
                   be used to send and receive NOOBs.
                 </p>
-                <span className="text-center d-inline-block">
+                <span className="text-center d-inline-block my-3">
                   <Link href="/wallet/create-new-wallet">
                     <a
                       className="btn btn-primary btn-lg w-100"
@@ -54,9 +52,6 @@ export default function Wallet() {
           </div>
         </div>
       </div>
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

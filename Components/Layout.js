@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.json";
 import Navbar from "./Navbar";
-import Footer from "./Footer";
+import UserDetails from "../Components/UserDetails";
 
 const Layout = ({ children }) => {
   return (
@@ -11,14 +11,14 @@ const Layout = ({ children }) => {
           overflow: "hidden",
           display: "block",
           position: "relative",
-          paddingBottom: "100px" /* height of your footer */,
+          paddingBottom: "100px",
         }}
       >
         <Navbar />
 
         <div>{children}</div>
       </div>
-      <Footer />
+      <UserDetails placement={"bottom"} />
     </>
   );
 };

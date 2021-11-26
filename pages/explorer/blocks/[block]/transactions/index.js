@@ -4,7 +4,6 @@ import styles from "../../../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SearchBar from "../../../../../Components/Explorer/SearchBar";
-import AccountInfo from "../../../../../Components/Wallet/AccountInfo";
 
 export const getStaticPaths = async () => {
   const blockData = await axios.get(`http://localhost:3001/blockchain`);
@@ -17,7 +16,7 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
 
@@ -26,6 +25,13 @@ export const getStaticProps = async (context) => {
   const transactionData = await axios.get(
     `http://localhost:3001/block/${block}/transactions`
   );
+
+  if (!transactionData) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       ...transactionData.data,
@@ -130,7 +136,6 @@ const BlockTransactions = (props) => {
           </table>
         </div>
       </div>
-      <AccountInfo />
     </>
   );
 };

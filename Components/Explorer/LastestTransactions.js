@@ -20,14 +20,20 @@ const LastestTransactions = ({ transactions }) => {
       >
         {/* TRANSACTIONS */}
         <h5
-          className="card-header"
+          className="card-header d-flex justify-content-between"
           style={{
             borderTopLeftRadius: "10px",
             borderTopRightRadius: "10px",
           }}
         >
           Latest Transactions
+          <Link href="/explorer/all-pending-transactions" passHref={true}>
+            <span className="badge bg-warning" role="button">
+              View Pending
+            </span>
+          </Link>
         </h5>
+
         <div className="card-body" style={{ overflowY: "auto" }}>
           {transactions &&
             transactions.map((tran, index) => (
@@ -39,9 +45,13 @@ const LastestTransactions = ({ transactions }) => {
                       <div className=" d-flex align-items-center">
                         <div className="">
                           <div
-                            className="border rounded-circle text-secondary  fs-5"
+                            className={
+                              tran.transferSuccessful
+                                ? "border border-success rounded-circle text-success fs-5"
+                                : "border  border-warning rounded-circle text-warning fs-5"
+                            }
                             style={{
-                              backgroundColor: "#e2e7e9",
+                              // backgroundColor: "#e2e7e9",
                               paddingRight: "0.4rem",
                               paddingLeft: "0.4rem",
                               marginTop: "0.4rem",

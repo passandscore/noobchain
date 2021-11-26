@@ -4,7 +4,6 @@ import Link from "next/link";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import { Modal, Button } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilValue } from "recoil";
 import { lockState, faucetDetails, miningDetails } from "../../recoil/atoms";
 import hashes from "../../lib/hashes";
@@ -222,7 +221,7 @@ export default function SendTransaction() {
       <ToastContainer position="top-center" pauseOnFocusLoss={false} />
 
       <MenuBar />
-      <div className="container ">
+      <div className="container " style={{ height: "35rem" }}>
         <h1 className="display-5 mt-5">Send Transaction</h1>
         <div>
           <Button
@@ -362,20 +361,17 @@ export default function SendTransaction() {
             ></textarea>
           </div>
         </form>
+
+        {signedTx && (
+          <div className="d-flex justify-content-center">
+            <Link href={`/explorer/transactions/${txHash}`} passHref={true}>
+              <button type="button" className="btn btn-primary my-2 w-50">
+                View Details on Noob Explorer
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
-
-      {_miningDetails.mode === "automatic" && (
-        <div className="d-flex justify-content-center">
-          <Link href={`/explorer/transactions/${txHash}`} passHref={true}>
-            <button type="button" className="btn btn-primary my-2 w-50">
-              View Details on Noob Explorer
-            </button>
-          </Link>
-        </div>
-      )}
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

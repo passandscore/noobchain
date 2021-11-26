@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { nodeList, defaultNode } from "../recoil/atoms";
-import AccountInfo from "../Components/Wallet/AccountInfo";
 import { Modal } from "react-bootstrap";
 
 export default function Nodes() {
@@ -363,9 +362,6 @@ export default function Nodes() {
           </tbody>
         </table>
       </div>
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

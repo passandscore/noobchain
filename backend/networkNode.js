@@ -1,11 +1,11 @@
-const express = require('express');
-const Blockchain = require('./blockchain');
-const uuid = require('uuid/v1');
+const express = require("express");
+const Blockchain = require("./blockchain");
+const uuid = require("uuid/v1");
 const port = process.argv[2];
-const rp = require('request-promise');
-const cors = require('cors');
-const { StatusCodes } = require('http-status-codes');
-const { json } = require('express');
+const rp = require("request-promise");
+const cors = require("cors");
+const { StatusCodes } = require("http-status-codes");
+const { json } = require("express");
 
 const noobchain = new Blockchain();
 
@@ -13,14 +13,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + "/public"));
 
 /**
  * @notice - Displays statistics about the node
  */
-app.get('/info', (req, res) => {
+app.get("/info", (req, res) => {
     res.json({
-        about: 'NoobChain/v1',
+        about: "NoobChain/v1",
         nodeUrl: noobchain.currentNodeUrl,
         peers: noobchain.networkNodes.length,
         difficulty: noobchain.difficulty,
@@ -36,7 +36,7 @@ app.get('/info', (req, res) => {
  * @notice - Displays all addresses in the node
  * @param address - Array of addresses
  */
-app.get('/addresses', (req, res) => {
+app.get("/addresses", (req, res) => {
     let allAddresses = noobchain.getAllAddresses();
     res.json(allAddresses);
 });
@@ -47,7 +47,7 @@ app.get('/addresses', (req, res) => {
  * @notice - Displays the transaction history of a specific address
  * @param address - Address of a wallet
  */
-app.get('/address/:address/transactions', (req, res) => {
+app.get("/address/:address/transactions", (req, res) => {
     let address = req.params.address;
     let tranHistory = noobchain.getTransactionHistory(address);
     res.json(tranHistory);
@@ -58,7 +58,7 @@ app.get('/address/:address/transactions', (req, res) => {
  * @notice - Displays the balance of a specific address
  * @param address - Address of a wallet
  */
-app.get('/address/:address/balance', (req, res) => {
+app.get("/address/:address/balance", (req, res) => {
     let address = req.params.address;
     let balance = noobchain.getAccountBalance(address);
     if (balance.errorMsg) res.status(StatusCodes.NOT_FOUND);
@@ -66,7 +66,7 @@ app.get('/address/:address/balance', (req, res) => {
 });
 
 // adds a transaction to a nodes pending transactions
-app.post('/transaction', function(req, res) {
+app.post("/transaction", function(req, res) {
     const newTransaction = req.body;
     const blockIndex =
         noobchain.addTransactionToPendingTransactions(newTransaction);
@@ -76,7 +76,7 @@ app.post('/transaction', function(req, res) {
 });
 
 // creates a new transaction
-app.post('/transaction/broadcast', function(req, res) {
+app.post("/transaction/broadcast", function(req, res) {
     const newTransaction = noobchain.addTransaction(req.body);
     console.log(newTransaction);
     if (newTransaction.errorMsg) {
@@ -92,7 +92,7 @@ app.post('/transaction/broadcast', function(req, res) {
         noobchain.networkNodes.forEach((node) => {
             const requestOptions = {
                 uri: `${node}/transaction`,
-                method: 'POST',
+                method: "POST",
                 body: newTransaction,
                 json: true,
             };
@@ -103,7 +103,7 @@ app.post('/transaction/broadcast', function(req, res) {
         Promise.all(requestPromises)
             .then(() =>
                 res.json({
-                    message: 'Transaction created and broadcasted',
+                    message: "Transaction created and broadcasted",
                     transactionDataHash: newTransaction.transactionDataHash,
                 })
             )
@@ -111,13 +111,8 @@ app.post('/transaction/broadcast', function(req, res) {
     } else res.status(StatusCodes.BAD_REQUEST).json(newTransaction);
 });
 
-// returns all blockchain transactions
-app.get('/all-transactions', function(req, res) {
-    res.json(noobchain.getAllTransactions());
-});
-
 //========================= Mining =========================
-app.post('/mine-next-block', function(req, res) {
+app.post("/mine-next-block", function(req, res) {
     const { minerAddress, difficulty } = req.body;
     const newBlock = noobchain.mineNextBlock(minerAddress, difficulty);
 
@@ -126,7 +121,7 @@ app.post('/mine-next-block', function(req, res) {
     noobchain.networkNodes.forEach((node) => {
         const requestOptions = {
             uri: `${node}/receive-new-block`,
-            method: 'POST',
+            method: "POST",
             body: { newBlock },
             json: true,
         };
@@ -137,23 +132,23 @@ app.post('/mine-next-block', function(req, res) {
     Promise.all(requestPromises)
         .then(() => {
             res.json({
-                message: 'New block mined and broadcasted successfully',
+                message: "New block mined and broadcasted successfully",
                 block: newBlock,
             });
         })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-app.post('/receive-new-block', function(req, res) {
+app.post("/receive-new-block", function(req, res) {
     const block = noobchain.extendChain(req.body.newBlock);
     if (!block.errorMsg) {
         res.json({
-            message: 'New block received and accepted',
+            message: "New block received and accepted",
             block,
         });
     } else {
         res.json({
-            message: 'New block rejected',
+            message: "New block rejected",
             block,
         });
     }
@@ -166,7 +161,7 @@ app.post('/receive-new-block', function(req, res) {
  * Step 3) Once broadcast is complete, the exisiting node will call the /register-nodes-bulk endpoint on the new node.
  * This will give the new node an updated list of all nodes in the network.
  */
-app.post('/register-and-broadcast-node', function(req, res) {
+app.post("/register-and-broadcast-node", function(req, res) {
     const newNodeUrl = req.body.newNodeUrl;
 
     // Step 1)
@@ -178,8 +173,8 @@ app.post('/register-and-broadcast-node', function(req, res) {
     const regNodesPromises = [];
     noobchain.networkNodes.forEach((networkNodesUrl) => {
         const requestOptions = {
-            uri: networkNodesUrl + '/register-node',
-            method: 'POST',
+            uri: networkNodesUrl + "/register-node",
+            method: "POST",
             body: { newNodeUrl: newNodeUrl },
             json: true,
         };
@@ -191,8 +186,8 @@ app.post('/register-and-broadcast-node', function(req, res) {
     Promise.all(regNodesPromises)
         .then((data) => {
             const bulkRegisterOptions = {
-                uri: newNodeUrl + '/register-nodes-bulk',
-                method: 'POST',
+                uri: newNodeUrl + "/register-nodes-bulk",
+                method: "POST",
                 body: {
                     allNetworkNodes: [
                         ...noobchain.networkNodes,
@@ -207,13 +202,13 @@ app.post('/register-and-broadcast-node', function(req, res) {
         })
         .then((data) => {
             res.json({
-                message: 'New node registered with network successfully',
+                message: "New node registered with network successfully",
             });
         })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-app.post('/register-node', function(req, res) {
+app.post("/register-node", function(req, res) {
     const newNodeUrl = req.body.newNodeUrl;
     const nodeNotAlreadyPresent =
         noobchain.networkNodes.indexOf(newNodeUrl) == -1;
@@ -221,11 +216,11 @@ app.post('/register-node', function(req, res) {
     if (nodeNotAlreadyPresent && notCurrentNode)
         noobchain.networkNodes.push(newNodeUrl);
     res.json({
-        message: 'New node registered successfully',
+        message: "New node registered successfully",
     });
 });
 
-app.post('/register-nodes-bulk', function(req, res) {
+app.post("/register-nodes-bulk", function(req, res) {
     const allNetworkNodes = req.body.allNetworkNodes;
     const pendingTransactions = req.body.pendingTransactions;
 
@@ -239,7 +234,7 @@ app.post('/register-nodes-bulk', function(req, res) {
     // update pending transactions
     noobchain.pendingTransactions = pendingTransactions;
     res.json({
-        message: 'Bulk registration successful',
+        message: "Bulk registration successful",
     });
 });
 
@@ -248,15 +243,15 @@ app.post('/register-nodes-bulk', function(req, res) {
  * That node will be broadcasted to all other nodes and removed from the network.
  * Step 2) The current node will initate then remove the old node from its database.
  */
-app.post('/unregister-and-broadcast-node', function(req, res) {
+app.post("/unregister-and-broadcast-node", function(req, res) {
     const oldNodeURL = req.body.oldNodeURL;
 
     // Step 1)
     const removeNodePromise = [];
     noobchain.networkNodes.forEach((networkNodesUrl) => {
         const requestOptions = {
-            uri: networkNodesUrl + '/unregister-node',
-            method: 'POST',
+            uri: networkNodesUrl + "/unregister-node",
+            method: "POST",
             body: { oldNodeURL: oldNodeURL },
             json: true,
         };
@@ -274,13 +269,13 @@ app.post('/unregister-and-broadcast-node', function(req, res) {
             }
 
             res.json({
-                message: 'Node removed from network successfully',
+                message: "Node removed from network successfully",
             });
         })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-app.post('/unregister-node', function(req, res) {
+app.post("/unregister-node", function(req, res) {
     if (noobchain.currentNodeUrl === req.body.oldNodeURL) {
         noobchain.networkNodes = [];
     } else {
@@ -292,21 +287,21 @@ app.post('/unregister-node', function(req, res) {
     // update pending transactions
     noobchain.pendingTransactions = [];
     res.json({
-        message: 'Node removed successfully',
+        message: "Node removed successfully",
     });
 });
 
 //========================= Consensus =========================
 
 // Used to correct the chain if a node has the wrong chain data.
-app.get('/consensus', function(req, res) {
+app.get("/consensus", function(req, res) {
     const requestPromises = [];
 
     // get all network nodes and make a request to each one
     noobchain.networkNodes.forEach((networkNodesUrl) => {
         const requestOptions = {
-            uri: networkNodesUrl + '/blockchain',
-            method: 'GET',
+            uri: networkNodesUrl + "/blockchain",
+            method: "GET",
             json: true,
         };
 
@@ -333,14 +328,14 @@ app.get('/consensus', function(req, res) {
                 // (newLongestChain && !noobchain.chainIsValid(newLongestChain))
             ) {
                 res.json({
-                    message: 'Current chain has not been replaced',
+                    message: "Current chain has not been replaced",
                     chain: noobchain.chain,
                 });
             } else {
                 noobchain.chain = newLongestChain;
                 noobchain.pendingTransactions = newPendingTransactions;
                 res.json({
-                    message: 'This chain has been replaced',
+                    message: "This chain has been replaced",
                     chain: noobchain.chain,
                 });
             }
@@ -349,46 +344,46 @@ app.get('/consensus', function(req, res) {
 });
 
 //========================= Block Explorer =========================
-app.get('/blockchain', function(req, res) {
+app.get("/blockchain", function(req, res) {
     res.send(noobchain);
 });
 
-app.get('/block/:blockHash', (req, res) => {
+app.get("/block/:blockHash", (req, res) => {
     const blockHash = req.params.blockHash;
     const correctBlock = noobchain.getBlock(blockHash);
     res.json({ block: correctBlock });
 });
 
-app.get('/blockByIndex/:index', (req, res) => {
+app.get("/blockByIndex/:index", (req, res) => {
     const blockIndex = req.params.blockIndex;
     const correctBlock = noobchain.getBlockByIndex(blockIndex);
     res.json({ block: correctBlock });
 });
 
-app.get('/block/:blockHash/transactions', (req, res) => {
+app.get("/block/:blockHash/transactions", (req, res) => {
     const blockHash = req.params.blockHash;
     const correctBlock = noobchain.getBlockTransactions(blockHash);
     res.json({ trans: correctBlock });
 });
 
-app.get('/transaction/:transactionHash', (req, res) => {
+app.get("/transaction/:transactionHash", (req, res) => {
     const transactionHash = req.params.transactionHash;
     const transactionData = noobchain.getTransaction(transactionHash);
     res.json({ transaction: transactionData });
 });
 
-app.get('/address/:address', (req, res) => {
+app.get("/address/:address", (req, res) => {
     const address = req.params.address;
     const addressData = noobchain.getAddressData(address);
     res.json({ addressData: addressData });
 });
 
-app.get('/block-explorer', (req, res) => {
-    res.sendFile('./block-explorer/index.html', { root: __dirname });
+app.get("/all-transactions", function(req, res) {
+    res.json(noobchain.getAllTransactions());
 });
 
-app.get('/wallet', (req, res) => {
-    res.sendFile('./wallet/wallet.html', { root: __dirname });
+app.get("/all-pending-transactions", function(req, res) {
+    res.json(noobchain.pendingTransactions);
 });
 //========================= Server =========================
 app.listen(port, function() {

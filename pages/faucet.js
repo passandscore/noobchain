@@ -12,7 +12,6 @@ import {
   faucetDetails,
   miningDetails,
 } from "../recoil/atoms";
-import AccountInfo from "../Components/Wallet/AccountInfo";
 import hashes from "../lib/hashes";
 import elliptic from "../lib/elliptic";
 import { ToastContainer, toast } from "react-toastify";
@@ -271,6 +270,16 @@ export default function Wallet() {
                 </a>
               </Link>
             </p>
+            {isMining && (
+              <div className="d-flex justify-content-center">
+                <Image
+                  src="/images/mining-progress.gif"
+                  alt="progress-bar"
+                  width="50px"
+                  height="30px"
+                />
+              </div>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
@@ -291,7 +300,7 @@ export default function Wallet() {
           </div>
         </div>
       </div>
-      <div className="container" style={{ width: "45rem" }}>
+      <div className="container" style={{ width: "45rem", height: "24rem" }}>
         {/* Card */}
         <div className="card">
           <div className="card-header d-flex justify-content-between">
@@ -368,7 +377,7 @@ export default function Wallet() {
             </div>
 
             {/* Button */}
-            {!txHash ? (
+            {!txHash && (
               <div className="p-2">
                 <button
                   type="button"
@@ -378,23 +387,10 @@ export default function Wallet() {
                   Submit
                 </button>
               </div>
-            ) : (
-              isMining && (
-                <div className="d-flex justify-content-center">
-                  <Image
-                    src="/images/mining-progress.gif"
-                    alt="progrees-bar"
-                    width="50px"
-                    height="30px"
-                  />
-                </div>
-              )
             )}
           </div>
         </div>
       </div>
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

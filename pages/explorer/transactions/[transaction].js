@@ -5,7 +5,6 @@ import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SearchBar from "../../../Components/Explorer/SearchBar";
-import AccountInfo from "../../../Components/Wallet/AccountInfo";
 
 export const getStaticPaths = async () => {
   const tranData = await axios.get(`http://localhost:3001/all-transactions`);
@@ -18,7 +17,7 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
 
@@ -27,6 +26,13 @@ export const getStaticProps = async (context) => {
   const tranData = await axios.get(
     `http://localhost:3001/transaction/${transaction}`
   );
+
+  if (!tranData) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       transaction: tranData.data,
@@ -48,6 +54,11 @@ const TransactionDetails = ({ transaction }) => {
       {
         name: "Status:",
         value: `${trans.transferSuccessful ? "Success" : "Pending"}`,
+        link: `${
+          trans.transferSuccessful
+            ? "/explorer/all-transactions"
+            : " /explorer/all-pending-transactions"
+        }`,
       },
       {
         name: "Block:",
@@ -99,7 +110,10 @@ const TransactionDetails = ({ transaction }) => {
         <SearchBar />
         <div className="container" style={{ marginTop: "8rem" }}>
           <h4 className="display-5">Transaction Details</h4>
-          <div className="container p-2 border rounded-3">
+          <div
+            className="container p-2 border rounded-3"
+            style={{ overflow: "auto" }}
+          >
             <table className="table ">
               <tbody>
                 {data &&
@@ -136,7 +150,6 @@ const TransactionDetails = ({ transaction }) => {
           </div>
         </div>
       </div>
-      <AccountInfo />
     </>
   );
 };

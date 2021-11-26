@@ -7,7 +7,7 @@ import SearchBar from "../../Components/Explorer/SearchBar";
 
 export const getStaticProps = async () => {
   const transactionData = await axios.get(
-    `http://localhost:3001/all-transactions`
+    `http://localhost:3001/all-pending-transactions`
   );
   return {
     props: {
@@ -16,19 +16,21 @@ export const getStaticProps = async () => {
   };
 };
 
-const AllTransactions = (props) => {
-  const [allTransactions, setAllTransactions] = useState([]);
+const AllPendingTransactions = (props) => {
+  const [allPendingTransactions, setAllPendingTransactions] = useState([]);
   const [totalValue, setTotalValue] = useState(0);
   const handleBlockchain = async () => {};
 
   useEffect(() => {
     // construct the array of transactions
     const transactionData = Object.values(props);
-    setAllTransactions(transactionData.reverse());
+    setAllPendingTransactions(transactionData.reverse());
 
     // calculate the total value of all transactions
-    let value = transactionData.map((t) => t.value).reduce((a, b) => a + b);
-    setTotalValue(value);
+    if (allPendingTransactions.length > 0) {
+      let value = transactionData.map((t) => t.value).reduce((a, b) => a + b);
+      setTotalValue(value);
+    }
   }, []);
 
   return (
@@ -52,7 +54,7 @@ const AllTransactions = (props) => {
         >
           <div className="card">
             <div className="card-header">
-              Transactions: {allTransactions.length}
+              Pending Transactions: {allPendingTransactions.length}
             </div>
             <div className="card-body">
               <blockquote className="blockquote mb-0">
@@ -71,9 +73,6 @@ const AllTransactions = (props) => {
                   <th scope="col" style={{ width: "12rem" }}>
                     Txn Hash
                   </th>
-                  <th scope="col" style={{ textAlign: "center" }}>
-                    Block
-                  </th>
                   <th scope="col">From</th>
                   <th scope="col" style={{ paddingLeft: "3rem" }}>
                     To
@@ -83,8 +82,8 @@ const AllTransactions = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {allTransactions.length > 0 &&
-                  allTransactions.map((d, index) => (
+                {allPendingTransactions.length > 0 &&
+                  allPendingTransactions.map((d, index) => (
                     <Link
                       href={`/explorer/transactions/${d.transactionDataHash.toString()}`}
                       key={index}
@@ -98,9 +97,7 @@ const AllTransactions = (props) => {
                             {`${d.transactionDataHash.slice(0, 20)}...`}
                           </Link>
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {d.minedInBlockIndex}
-                        </td>
+
                         <td>
                           <Link
                             href={`/explorer/addresses/${d.from.toString()}`}
@@ -148,4 +145,4 @@ const AllTransactions = (props) => {
   );
 };
 
-export default AllTransactions;
+export default AllPendingTransactions;

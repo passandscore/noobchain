@@ -4,7 +4,6 @@ import styles from "../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SearchBar from "../../Components/Explorer/SearchBar";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 
 export const getStaticProps = async (context) => {
   const blockchain = await axios.get(`http://localhost:3001/blockchain`);
@@ -120,7 +119,6 @@ const AllBlocks = (props) => {
           </div>
         </div>
       </div>
-      <AccountInfo />
     </>
   );
 };

@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import styles from "../../../styles/BlockExplorer.module.css";
 import axios from "axios";
 import SearchBar from "../../../Components/Explorer/SearchBar";
-import AccountInfo from "../../../Components/Wallet/AccountInfo";
 
 export const getStaticPaths = async () => {
   const addressData = await axios.get(`http://localhost:3001/addresses`);
@@ -17,7 +16,7 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
 
@@ -26,6 +25,12 @@ export const getStaticProps = async (context) => {
   const addressData = await axios.get(
     `http://localhost:3001/address/${address}`
   );
+
+  if (!addressData) {
+    return {
+      notFound: true,
+    };
+  }
   return {
     props: {
       ...addressData.data,
@@ -57,10 +62,7 @@ const AddressDetails = (props) => {
         }}
       >
         <SearchBar />
-        <div
-          className="container"
-          style={{ marginTop: "8rem", height: "24rem" }}
-        >
+        <div className="container" style={{ marginTop: "8rem" }}>
           <div className="card">
             <div className="card-header">Address: {props.address}</div>
             <div className="card-body">
@@ -74,10 +76,7 @@ const AddressDetails = (props) => {
             </div>
           </div>
 
-          <div
-            className="table-responsive"
-            style={{ height: "26rem", overflow: "auto" }}
-          >
+          <div className="table-responsive" style={{ overflow: "auto" }}>
             <table className="table">
               <thead>
                 <tr>
@@ -152,7 +151,6 @@ const AddressDetails = (props) => {
           </div>
         </div>
       </div>
-      <AccountInfo />
     </>
   );
 };

@@ -1,6 +1,5 @@
 import Head from "next/head";
 import MenuBar from "../../Components/Wallet/MenuBar";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useState, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { lockState } from "../../recoil/atoms";
@@ -90,7 +89,7 @@ export default function AccountBalances() {
 
             <hr />
 
-            <div className="container w-75">
+            <div className="container w-75" style={{ height: "28rem" }}>
               <table className="table" style={{ maxWidth: "60rem" }}>
                 <thead>
                   <tr>
@@ -131,9 +130,6 @@ export default function AccountBalances() {
           </>
         )}
       </div>
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

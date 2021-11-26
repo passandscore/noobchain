@@ -66,7 +66,7 @@ const LatestBlocks = ({ blocks }) => {
                   </div>
                   {/* col 2 */}
                   <div className="col-md-6">
-                    <div className="px-2">
+                    <div className="px-5">
                       <div className="text-secondary">
                         Mined By{" "}
                         <a href="#" className={styles.noDecor}>

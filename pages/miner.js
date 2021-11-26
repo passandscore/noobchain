@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { address, nodeList, miningDetails } from "../recoil/atoms";
-import AccountInfo from "../Components/Wallet/AccountInfo";
 import { Modal, ButtonGroup, ToggleButton, Button } from "react-bootstrap";
 
 export default function Miner() {
@@ -367,7 +366,7 @@ export default function Miner() {
               height="200px"
             />
           </div>
-          <div className="container w-75 ">
+          <div className="container w-75 " style={{ height: "18rem" }}>
             <p className="lead">
               <strong>Auto-Mining Enabled:</strong> The miner will automatically
               mine a block once a pending transaction is confirmed. The mining
@@ -403,9 +402,6 @@ export default function Miner() {
           </div>
         </>
       )}
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

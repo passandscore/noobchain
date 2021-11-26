@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { useState, useRef } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
 import { lockState, address } from "../../recoil/atoms";
 import { ToastContainer, toast } from "react-toastify";
@@ -101,9 +100,6 @@ export default function OpenExistingWallet() {
           </div>
         </form>
       </div>
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

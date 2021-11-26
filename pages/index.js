@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/Wallet.module.css";
+import Footer from "../Components/Footer";
 
 export default function Wallet() {
   return (
@@ -14,7 +15,7 @@ export default function Wallet() {
         className={styles.background}
         style={{ display: "flex", justifyContent: "center" }}
       ></div>
-      <div className="container" style={{ marginTop: "10rem" }}>
+      <div className="container" style={{ marginTop: "9rem", height: "100%" }}>
         <div className="jumbotron">
           <div className="container text-center text-lg-left">
             <div className="row">
@@ -56,6 +57,7 @@ export default function Wallet() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

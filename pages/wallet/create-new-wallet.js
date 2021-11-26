@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRef, useState } from "react";
 import MenuBar from "../../Components/Wallet/MenuBar";
 import elliptic from "../../lib/elliptic";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 import { useRecoilState } from "recoil";
 import { lockState, address } from "../../recoil/atoms.js";
 import { saveKeysInSession } from "../../lib/session";
@@ -76,9 +75,6 @@ export default function CreateNewWallet() {
           )}
         </form>
       </div>
-
-      {/* Display Account Information */}
-      <AccountInfo />
     </>
   );
 }

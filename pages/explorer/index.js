@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import SearchBar from "../../Components/Explorer/SearchBar";
 import LatestBlocks from "../../Components/Explorer/LatestBlocks";
 import LastestTransactions from "../../Components/Explorer/LastestTransactions";
-import AccountInfo from "../../Components/Wallet/AccountInfo";
 
 export default function Home() {
   const [blocks, setblocks] = useState([]);
@@ -62,7 +61,6 @@ export default function Home() {
           <LastestTransactions transactions={transactions} />
         </div>
       </div>
-      <AccountInfo />
     </>
   );
 }
