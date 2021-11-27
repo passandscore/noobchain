@@ -275,9 +275,9 @@ export default function Miner() {
             </ButtonGroup>
             <p className="lead">
               <strong>Select Mining Difficulty:</strong> Represents the number
-              of prefixed zeros (ex: 00000) that be present to make the hash
-              valid. A higher difficulty level requires more computing power to
-              verify transactions and mine new coins.{" "}
+              of prefixed zeros (ex: 00000) that must be present to make the
+              hash valid. A higher difficulty level requires more computing
+              power to verify transactions and mine new coins.{" "}
             </p>
           </div>
 

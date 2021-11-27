@@ -1,55 +1,45 @@
 .landingText {
-  max-width: 800px;
+    max-width: 800px;
 }
 
 .github {
-  text-decoration: none;
-  cursor: pointer;
-  color: aliceblue;
+    text-decoration: none;
+    cursor: pointer;
+    color: aliceblue;
 }
 
 .github:after {
-  content: "Jason Schwarz";
+    content: "Jason Schwarz";
 }
 
 .github:hover:after {
-  content: "Check me out on Github";
-  color: aliceblue;
+    content: "Check me out on Github";
+    color: aliceblue;
 }
 
 .background {
-  background: rgb(2, 0, 36);
-  background: linear-gradient(
-    90deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(9, 9, 121, 1) 35%,
-    rgba(0, 212, 255, 1) 100%
-  );
-  width: 100%;
-  height: 15rem;
-  position: relative;
-  padding: 50px;
+    background: rgb(2, 0, 36);
+    background: linear-gradient( 90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+    width: 100%;
+    height: 15rem;
+    position: relative;
+    padding: 50px;
 }
 
 .noDecor {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  background: rgb(2, 0, 36);
-  background: linear-gradient(
-    90deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(9, 9, 121, 1) 35%,
-    rgba(0, 212, 255, 1) 100%
-  );
-  height: 8rem;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  /* z-index: 2; */
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    background: rgb(2, 0, 36);
+    background: linear-gradient( 90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+    height: 8rem;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    z-index: 2;
 }
